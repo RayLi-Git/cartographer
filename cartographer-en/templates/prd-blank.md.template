@@ -1,0 +1,152 @@
+<!--
+  Cartographer blank PRD template
+  Usage: fill section by section; each <!-- guide --> comment is what that section must answer — delete when filled.
+  Requirement format: FR/NFR-<module>-<n>: The system shall <observable behavior>. | P0 | AC: <verifiable> | Source: <persona/objective> | Depends: <FR-x or ->
+  When done run: python scripts/prd_lint.py <this file> — should exit 0.
+  Per-section details in references/NN_*/_index.md.
+-->
+
+# <Product / Feature Name> PRD
+
+| Field | Value |
+|---|---|
+| Author / PM | |
+| Version | v0.1 |
+| Created | YYYY-MM-DD |
+| Tier | 🟢 light / 🟡 medium / 🔴 heavy |
+| Mode | draft / review |
+| Sensitive scope | [ ]PII [ ]money [ ]health data [ ]permissions → if any, §8 is required |
+
+### Changelog
+| Version | Date | Summary | Author |
+|---|---|---|---|
+| v0.1 | YYYY-MM-DD | Initial draft | |
+
+---
+
+## 1. Background & Problem
+<!-- guide: problem (not solution) in one sentence + verifiable evidence + why now + current state + cost of inaction. See §01 -->
+**Problem**:
+**Evidence**:
+**Why now**:
+**Current/existing solution**:
+**Cost of inaction**:
+
+## 2. Objectives & Success Metrics
+<!-- guide: North Star + each KPI "current→target+deadline+measurement"; split goal/hypothesis/fact; add guardrails. See §02 -->
+**North Star**:
+
+| ID | Goal | Current → Target | Deadline | Measurement |
+|----|------|------------------|----------|-------------|
+| O-1 | | | | |
+
+**Guardrails**:
+**Hypotheses (unvalidated, see §3)**: ⚠️assumption
+
+## 3. Assumptions, Constraints & Risks
+<!-- guide: assumptions(bet)/constraints(can't change)/risks(prob×impact+mitigation+owner). See §03 -->
+**Assumptions**:
+- A-1: | validation: | owner:
+
+**Constraints**:
+- C-1:
+
+**Risk register**:
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | | | | | |
+
+## 4. Stakeholders & RACI
+<!-- guide: include silent roles (support/compliance/security/SRE) and external deps; write cares/fears; one A per RACI row. See §04 -->
+| Role | Cares about | Fears most |
+|------|-------------|------------|
+| | | |
+
+**RACI** (R Responsible / A Accountable / C Consulted / I Informed)
+| Decision | PM | Eng | Design | Security | Compliance |
+|----------|----|----|--------|----------|-----------|
+| | | | | | |
+
+## 5. User Stories & Journey
+<!-- guide: persona(context/goal/pain/success→§2) + anti-persona + main journey with branches. See §05 -->
+### Persona
+**P1 <name>**:
+
+### Anti-persona (not for whom)
+-
+
+### Main journey
+<start> → <steps> → <finish>  branches: ❌ / ⏳ / 🔌
+
+## 6. Functional Requirements
+<!-- guide: each atomic+numbered+priority+AC+source; per main flow add negative/edge/state(empty·loading·error·offline). See §06 -->
+### 6.1 <module>
+FR-XXX-01: The system shall ... | P0 | AC: ... | Source: ... | Depends: -
+
+## 7. Non-Functional Requirements
+<!-- guide: perf(p95/p99)/availability(SLA+degradation)/observability(metrics·alerts)/a11y(WCAG)/i18n; each quantifiable. See §07 -->
+NFR-PERF-01: ... | Px | AC:
+NFR-SLA-01: ... | Px | AC:
+NFR-OBS-01: ... | Px | AC:
+
+## 8. Security, Privacy & Compliance
+<!-- guide: required if PII/money/permissions. Data classification + threats/defenses + compliance(consent·retention·deletion); check the Sentinel five red flags. See §08 -->
+### 8.1 Data classification
+| Data | Class | Storage/retention | Access control | Encryption |
+|------|-------|-------------------|----------------|------------|
+| | | | | |
+
+### 8.2 Threats & defenses
+-
+
+### 8.3 Compliance & privacy
+NFR-PRIV-01: ... | Px | AC:
+
+## 9. Data & Integration
+<!-- guide: data model(fields+relations+status lifecycle) + contracts(schema+error codes+idempotency) + platform matrix + third-party(limits+failure behavior). See §09 -->
+### 9.1 Data model
+### 9.2 Interface contracts
+### 9.3 Platform support matrix
+### 9.4 Third-party dependencies
+
+## 10. Scope Boundary
+<!-- guide: spell out out-of-scope + reasons; next≠promise; criterion aligns with §2. See §10 -->
+**In scope**:
+**Out of scope**:
+**Next (maybe, not a promise)**:
+
+## 11. Open Questions
+<!-- guide: only "no answer, to investigate/decide"; each owner+ruling-by; risks move to §3. See §11 -->
+| ID | Question | Impact | Owner | Ruling by |
+|----|----------|--------|-------|-----------|
+| Q-1 | | | | |
+
+## 12. Milestones & Release Slices
+<!-- guide: vertical slices(end-to-end verifiable); requirement dependency ordering; validate high-risk assumptions early; each milestone has DoD. See §12 -->
+**Dependencies**:
+| Milestone | Slice content | Requirements | DoD | Hard date |
+|-----------|---------------|--------------|-----|-----------|
+| M1 | | | | |
+
+## 13. Glossary & Competitive Analysis
+<!-- guide: define abbreviations/terms, unify one-thing-many-names; competitive table yields differentiation. See §13 -->
+### Glossary
+| Term | Definition |
+|------|------------|
+| | |
+
+### Competitive / current-state
+| Dimension | Us | Competitor A | Competitor B |
+|-----------|----|--------------|--------------|
+| | | | |
+**Differentiated positioning**:
+
+## 14. Handoff to Compass
+<!-- guide: run prd_lint to pass; traceability matrix has no orphans; checklist has verification method; carry dependencies. See §14 -->
+### Traceability matrix
+| Requirement | Source | Objective | AC summary | Priority | Milestone |
+|-------------|--------|-----------|------------|----------|-----------|
+| | | | | | |
+
+### Compass Checklist
+- [ ] FR-XXX-01 ... | Px | AC: ... | verify: ...
