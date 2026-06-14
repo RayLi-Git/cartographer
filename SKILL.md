@@ -137,5 +137,5 @@ FR-PAY-03: 系統 shall 在金流回呼逾時 30 秒後，將訂單標記為 pen
 - `templates/prd-filled-example.md` — 一份填好的軟體範例（電商結帳付款）
 - `scripts/prd_lint.py` — PRD 機械化健檢
 
-**Version**: v0.1.0（中文核心版）
-**Status**: building — SKILL ＋ 15 模組 ＋ 模板 ＋ lint；docs/README/英文鏡像隨後補
+**Version**: v1.0.0
+**Status**: feature-complete — SKILL ＋ 15 模組 ＋ 模板 ＋ lint ＋ docs ＋ 教學範例 ＋ 英文鏡像 cartographer-en，皆已交付
