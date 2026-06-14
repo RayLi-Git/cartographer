@@ -127,7 +127,7 @@ Functional `FR-<module>-<n>`, non-functional `NFR-<category>-<n>` (PERF/SEC/PRIV
 
 ## 📂 Case-history integration
 
-Shares the `.claude/` case-history files with Sentinel / Compass. When a drafting/review pain point is sharp enough (requirements that won't settle, a burned assumption, a security tradeoff), write it to `.claude/debug-log.md` with a `[CARTO]` prefix for retrieval.
+Shares the same **two-tier** case-history with Sentinel / Compass (global `~/.claude/` cross-project + project `<proj>/.claude/`). When a drafting/review pain point is sharp enough (requirements that won't settle, a burned assumption, a security tradeoff), write it to the matching tier's `debug-log.md` with a `[CARTO]` prefix (cross-project → global, this-project → project). Engine and routing: see sentinel `debug_log_template.md`.
 
 ---
 

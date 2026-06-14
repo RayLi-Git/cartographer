@@ -127,7 +127,7 @@ FR-PAY-03: 系統 shall 在金流回呼逾時 30 秒後，將訂單標記為 pen
 
 ## 📂 病歷整合
 
-跟 Sentinel / Compass 共用 `.claude/` 病歷檔。當起草/審查中遇到「需求反覆改不定、假設踩雷、資安取捨」夠痛時，寫進 `.claude/debug-log.md`，加標 `[CARTO]` 前綴方便檢索。
+跟 Sentinel / Compass 共用同一套**兩層病歷**（全域 `~/.claude/` 跨專案 ＋ 專案 `<proj>/.claude/`）。當起草/審查中遇到「需求反覆改不定、假設踩雷、資安取捨」夠痛時，寫進對應層的 `debug-log.md`、加標 `[CARTO]` 前綴方便檢索（跨專案的→全域、只在本專案的→專案）。引擎與判準見 sentinel `debug_log_template.md`。
 
 ---
 
