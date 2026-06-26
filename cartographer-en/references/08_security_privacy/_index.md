@@ -2,7 +2,7 @@
 
 > An **elevated standalone module** after the multi-perspective review. The AirPods PRD's biggest hole is right here: it collected health data (`2.9 fitness tracking`, `7.8 hearing-health dose`) with **zero privacy handling** — no data classification, retention, consent, or encryption. Health data is a special category of sensitive data under GDPR. That hole is the live teaching example: **whenever it touches PII/money/permissions/sensitive data, this section cannot be skipped.**
 >
-> This section directly cites Sentinel's security thinking: `05_security_thinking/` (authn attack surface, input trust boundaries, secrets & least privilege, dependency supply chain) and the `self_check.md` red-flag list.
+> This section directly cites Sentinel's security thinking: `sentinel/references/05_security_thinking/` (authn attack surface, input trust boundaries, secrets & least privilege, dependency supply chain) and the `sentinel/references/self_check.md` red-flag list.
 
 ---
 
@@ -42,13 +42,12 @@
 ## How to write security requirements (test-first scope uses NFR-SEC / NFR-PRIV)
 
 ```
-NFR-SEC-01: The system shall require OAuth2 + a one-time idempotency key on all payment APIs and reject replays.
-  Priority: P0 | AC: replaying the same idempotency key returns 200 but does not double-charge; missing token returns 401
-NFR-PRIV-01: The system shall not store full card numbers, only the tokenized token and last four digits.
-  Priority: P0 | AC: full-text scan of DB/logs finds no 16-digit card number
-NFR-PRIV-02: The system shall provide a user data-deletion request, completed within 30 days with a receipt.
-  Priority: P1 | AC: after deletion the user's PII is unqueryable via any interface (GDPR Art. 17)
+NFR-SEC-01: The system shall require OAuth2 and a one-time idempotency key on all payment APIs and reject replays. | P0 | AC: replaying the same idempotency key returns 200 but does not double-charge; missing token returns 401 | Source: R-1 / security | Depends: -
+NFR-PRIV-01: The system shall not store full card numbers, only the tokenized token and last four digits. | P0 | AC: full-text scan of DB/logs finds no 16-digit card number | Source: C-2 PCI | Depends: -
+NFR-PRIV-02: The system shall provide a user data-deletion request and complete it within 30 days with a receipt. | P1 | AC: after deletion the user's PII is unqueryable via any interface (GDPR Art. 17) | Source: compliance | Depends: -
 ```
+
+> Same **single-line `|`-separated** format; security requirements likewise mandate `Source:` (test-first scope especially must trace back to a threat/compliance source).
 
 > House rule: **security modules (Auth/permissions/PII) are test-first**. Write these ACs so they convert directly into tests.
 

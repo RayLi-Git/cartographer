@@ -30,7 +30,7 @@ Payment: { id, orderId, provider, token, last4, status, idempotencyKey }
 ```
 POST /api/checkout
   req:  { orderId, paymentMethodId, idempotencyKey }
-  resp: 200 { paymentId, status } | 423 鎖定 | 409 重複 | 402 付款失敗
+  resp: 200 { paymentId, status } | 402 付款失敗 | 409 重複 | 401 未授權
   冪等：相同 idempotencyKey 回首次結果，不重複扣款
 事件：checkout_started / checkout_succeeded / checkout_failed（供 §02 量測、§07 可觀測）
 ```

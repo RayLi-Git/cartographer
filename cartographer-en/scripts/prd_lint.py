@@ -15,7 +15,8 @@ Warnings (non-blocking):
   7. A "Depends:" reference to an FR-/NFR- id not defined in this file -> dangling dependency
 
 Usage:
-  python prd_lint.py <PRD.md>
+  py prd_lint.py <PRD.md>        # Windows (plain `python` may be the Store stub and silently do nothing)
+  python3 prd_lint.py <PRD.md>   # macOS / Linux
   exit 0 = pass (ready to hand off to Compass); exit 1 = blocking issues
 
 v2: removed the noisy prose-adjective warning; added duplicate-id (blocking) and dangling-dependency (warning) structural checks.
@@ -135,7 +136,7 @@ def lint(path):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python prd_lint.py <PRD.md>")
+        print("Usage: py prd_lint.py <PRD.md> (Windows) / python3 prd_lint.py <PRD.md> (macOS/Linux)")
         sys.exit(2)
 
     path = sys.argv[1]

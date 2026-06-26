@@ -7,12 +7,10 @@
 ## The iron rule per requirement: atomic + numbered + priority + AC + source
 
 ```
-FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout.
-  Priority: P0          # P0 launch-blocking / P1 high / P2 medium / P3 future
-  AC: at second 31 order status = pending; at most 3 retries within 5 min; each retry writes an audit log
-  Source: Scenario #2 interrupted checkout / Objective O-1 "checkout success ≥ 99.5%"
-  Depends: FR-PAY-01 (create payment intent)
+FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout. | P0 | AC: at second 31 order status = pending; at most 3 retries within 5 min; each retry writes an audit log | Source: Scenario #2 interrupted checkout / Objective O-1 "checkout success ≥ 99.5%" | Depends: FR-PAY-01
 ```
+
+> **One requirement per line, fields separated by `|`** — this is the only format `prd_lint.py` recognizes; **splitting each field onto its own line gets it counted as missing and blocked**. (Priority note: P0 launch-blocking / P1 high / P2 medium / P3 future.)
 
 | Element | Rule |
 |---|---|
@@ -21,7 +19,7 @@ FR-PAY-03: The system shall mark the order pending and trigger a reconciliation 
 | **shall clause** | "The system shall <observable behavior>", explicit subject, observable verb |
 | **Priority** | P0/P1/P2/P3, and you can say **why** that level |
 | **AC** | Verifiable: has numbers, or Given/When/Then, or explicit state transition |
-| **Source** | Traces to a persona/scenario + an objective (question any requirement with no source) |
+| **Source** | Traces to a persona/scenario + an objective (question any requirement with no source); on a 🟢 light task that skips §02/§05, it may trace back to a §01 pain point |
 
 ---
 

@@ -38,8 +38,8 @@ Scan the existing PRD chapter by chapter; for each requirement check the seven q
 
 | Tier | Trigger | Sections |
 |---|---|---|
-| 🟢 light | minor revision, single small feature | 00 → 01 → 06 → 11 |
-| 🟡 medium | one complete feature module, one integration | 00–02, 05–08, 10–11 |
+| 🟢 light | minor revision, single small feature | 00 → 01 → 06 → 11 (§06's "source" traces back to the §01 pain point) |
+| 🟡 medium | one complete feature module, one integration | 00–02, 05–11 (integrating a service must include §09 contracts/third-party failure) |
 | 🔴 heavy | new product/system/cross-team; money/PII/permissions | full 00–14 |
 
 **Escalate, don't downgrade**: if the user says "just write something simple" but the task touches money/PII, cite this table — §06 acceptance criteria and §08 security **cannot be skipped**.

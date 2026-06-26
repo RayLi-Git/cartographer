@@ -29,7 +29,7 @@
 
 ## 轉成 Compass 的 prd-checklist.md
 
-把每條 FR/NFR 展開成 compass 的勾稽項（對應 compass `templates/prd-checklist.md.template`）：
+把每條 FR/NFR 展開成 compass 的勾稽項（對應 `compass/templates/prd-checklist.md.template`）：
 
 ```markdown
 ## PRD Checklist（交棒 compass）

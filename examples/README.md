@@ -16,6 +16,7 @@
 - **學「爛在哪、怎麼修」**：對照 `example-bad-prd.md`（前）與 `example-points-after-review.md`（後）。
 - **驗證 lint**：
   ```
-  python ../scripts/prd_lint.py example-points-after-review.md   # PASS
-  python ../scripts/prd_lint.py example-bad-prd.md               # 凸顯無編號=lint 失明
+  # Windows 用 py；macOS/Linux 用 python3（直接打 python 在 Windows 可能是 Store stub 會啞掉）
+  py ../scripts/prd_lint.py example-points-after-review.md   # PASS
+  py ../scripts/prd_lint.py example-bad-prd.md               # 凸顯無編號=lint 失明
   ```

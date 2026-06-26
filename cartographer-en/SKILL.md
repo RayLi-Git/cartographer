@@ -45,10 +45,11 @@ I'm part of one toolchain with [Sentinel](https://github.com/RayLi-Git/sentinel)
 | Tier | Trigger | Sections |
 |---|---|---|
 | 🟢 light | A single small feature, minor revision | Lean: 00 → 01 → 06 → 11 |
-| 🟡 medium | One complete feature module, integrating a service | 00–02, 05–08, 10–11 (~9) |
+| 🟡 medium | One complete feature module, integrating a service | 00–02, 05–11 (~10; integrating a service must include §09 contracts/third-party failure) |
 | 🔴 heavy | New product/system, cross-team, money/PII/permissions | Full 00–14 |
 
 "Go deeper / think it through / plan it fully" escalates; 🔴 heavy cannot skip security (§08) or acceptance criteria (§06).
+> **Where 🟢 light traces its "source"**: a light task skips §02 objectives / §05 personas, so the `Source:` that §06 mandates traces back to the **§01 background pain point** instead (e.g. `Source: §01 cart-abandonment pain`). The moment you need to trace to a named persona or a quantified objective, escalate to 🟡.
 
 ---
 
@@ -90,6 +91,9 @@ You say "help me write a PRD"
 
 **A quality gate that fails doesn't get pushed through**: if Objectives still says "make it good", I block and ask for numbers; if a requirement lacks acceptance criteria, I block and make you add them. Mechanical enforcement is delegated to `scripts/prd_lint.py` (exit code over discipline).
 
+> ⚠️ **lint pass ≠ good PRD**: it only blocks "mechanical breaks" (missing numbered field, adjectives, duplicate ids). It **does not verify whether an AC is truly testable, and does not catch un-numbered requirements** (a whole block of prose with no FR- gets a false PASS). Semantic quality still rests on the per-section quality gates and your judgment.
+> 🪟 **When lint won't run**: on Windows, typing `python` directly may hit the Store stub (silently does nothing) — use `py` instead. If you truly have no Python, fall back to the "seven-question manual health check" in §00 and check item by item by hand.
+
 ---
 
 ## 🔍 Two modes, one standard
@@ -102,26 +106,23 @@ You say "help me write a PRD"
 ## ✍️ The unified requirement format (details in §06 / §07)
 
 ```
-FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout.
-  Priority: P0          # P0 launch-blocking / P1 high / P2 medium / P3 future
-  AC: at second 31 the order status = pending; at most 3 retries within 5 minutes
-  Source: Scenario #2 interrupted checkout / Objective O-1 "checkout success ≥ 99.5%"
-  Depends: FR-PAY-01 (create payment intent)
+FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout. | P0 | AC: at second 31 the order status = pending, at most 3 retries within 5 minutes | Source: Scenario #2 interrupted checkout / Objective O-1 "checkout success ≥ 99.5%" | Depends: FR-PAY-01
 ```
-Functional `FR-<module>-<n>`, non-functional `NFR-<category>-<n>` (PERF/SEC/PRIV/OBS/A11Y/I18N/SLA).
+**One requirement per line, fields separated by `|`** — this is the **only** format `prd_lint.py` recognizes; **splitting fields across lines gets blocked**. Priority: P0 launch-blocking / P1 high / P2 medium / P3 future. Functional `FR-<module>-<n>`, non-functional `NFR-<category>-<n>` (PERF/SEC/PRIV/OBS/A11Y/I18N/SLA).
 
 ---
 
-## 🤝 Working with Sentinel / Compass
+## 🤝 Working with Sentinel / Compass / Lookout
 
 | Scenario | Primary | Support |
 |---|---|---|
 | Have an idea, need a PRD | **Cartographer** throughout | Sentinel to think through root cause and blind spots |
-| Writing the security/privacy section | Cartographer §08 | **Sentinel** 11 security habits + red-flag list |
+| Writing the security/privacy section | Cartographer §08 | **Sentinel** 13 security habits + red-flag list |
 | PRD done, ready to build | Cartographer §14 handoff → **Compass** | — |
 | Found gaps/contradictions mid-build | **Compass** §5 conflict handling | Cartographer to patch the spec |
+| Section/module done, want an independent review | **Lookout** (independent context) | catch bugs / un-modularized duplication / the 13 security habits |
 
-§08 directly cites Sentinel's `self_check.md`; §14 produces Compass's `prd-checklist.md` and the reverse-audit input.
+§08 directly cites Sentinel's `sentinel/references/self_check.md` and `sentinel/references/05_security_thinking/`; §14 produces Compass's `compass/templates/prd-checklist.md.template` and the reverse-audit input.
 
 ---
 

@@ -30,7 +30,7 @@ Payment: { id, orderId, provider, token, last4, status, idempotencyKey }
 ```
 POST /api/checkout
   req:  { orderId, paymentMethodId, idempotencyKey }
-  resp: 200 { paymentId, status } | 423 locked | 409 duplicate | 402 payment failed
+  resp: 200 { paymentId, status } | 402 payment failed | 409 duplicate | 401 unauthorized
   idempotency: same idempotencyKey returns the first result, no double charge
 events: checkout_started / checkout_succeeded / checkout_failed (for §02 metrics, §07 observability)
 ```

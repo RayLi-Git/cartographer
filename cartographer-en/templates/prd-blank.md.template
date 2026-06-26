@@ -2,7 +2,7 @@
   Cartographer blank PRD template
   Usage: fill section by section; each <!-- guide --> comment is what that section must answer — delete when filled.
   Requirement format: FR/NFR-<module>-<n>: The system shall <observable behavior>. | P0 | AC: <verifiable> | Source: <persona/objective> | Depends: <FR-x or ->
-  When done run: python scripts/prd_lint.py <this file> — should exit 0.
+  When done run: py scripts/prd_lint.py <this file> (Windows) / python3 scripts/prd_lint.py <this file> (macOS/Linux) — should exit 0.
   Per-section details in references/NN_*/_index.md.
 -->
 

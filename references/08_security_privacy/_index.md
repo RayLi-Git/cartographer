@@ -2,7 +2,7 @@
 
 > 多視角檢視後**升格的獨立模組**。AirPods 範本最大的漏洞就在這：它收健康資料（`2.9 fitness tracking`、`7.8 聽力健康劑量`）卻**整份零隱私處理**——沒有資料分類、保存、同意、加密。健康資料是 GDPR 的特殊類別敏感資料。這個漏洞正是活教材：**只要碰 PII/金流/權限/敏感資料，這節不可跳。**
 >
-> 本節直接引用 Sentinel 的資安思考：`05_security_thinking/`（authn 攻擊面、輸入信任邊界、機密與最小權限、依賴供應鏈）與 `self_check.md` 紅旗清單。
+> 本節直接引用 Sentinel 的資安思考：`sentinel/references/05_security_thinking/`（authn 攻擊面、輸入信任邊界、機密與最小權限、依賴供應鏈）與 `sentinel/references/self_check.md` 紅旗清單。
 
 ---
 
@@ -42,13 +42,12 @@
 ## 安全需求寫法（test-first 範疇用 NFR-SEC / NFR-PRIV）
 
 ```
-NFR-SEC-01: 系統 shall 對所有付款 API 強制 OAuth2 + 一次性冪等鍵，拒絕重放。
-  優先級: P0 ｜ AC: 重送相同冪等鍵回 200 但不重複扣款；缺 token 回 401
-NFR-PRIV-01: 系統 shall 不儲存完整卡號，僅保留 tokenize 後的 token 與末四碼。
-  優先級: P0 ｜ AC: DB/日誌全文掃描查無 16 碼卡號
-NFR-PRIV-02: 系統 shall 提供使用者刪除個資請求，30 日內完成並回執。
-  優先級: P1 ｜ AC: 刪除後該用戶 PII 不可由任何介面查得（法遵: GDPR 第 17 條）
+NFR-SEC-01: 系統 shall 對所有付款 API 強制 OAuth2 與一次性冪等鍵並拒絕重放。｜P0 ｜AC: 重送相同冪等鍵回 200 但不重複扣款；缺 token 回 401 ｜來源: R-1 / 資安 ｜依賴: -
+NFR-PRIV-01: 系統 shall 不儲存完整卡號，僅保留 tokenize 後的 token 與末四碼。｜P0 ｜AC: DB/日誌全文掃描查無 16 碼卡號 ｜來源: C-2 PCI ｜依賴: -
+NFR-PRIV-02: 系統 shall 提供使用者刪除個資請求並於 30 日內完成回執。｜P1 ｜AC: 刪除後該用戶 PII 不可由任何介面查得（法遵: GDPR 第 17 條）｜來源: 法遵 ｜依賴: -
 ```
+
+> 同樣是**單行 ｜ 分隔**格式；安全需求一樣強制 `來源:`（test-first 範疇尤其要追得回威脅/法遵來源）。
 
 > CLAUDE.md 家規：**安全模組（Auth/權限/PII）test-first**。這些需求的 AC 要寫得能直接變成測試。
 

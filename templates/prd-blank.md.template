@@ -2,7 +2,7 @@
   Cartographer 空白 PRD 模板
   用法：逐節填寫；每個 <!-- 引導 --> 註解是該節要回答的重點，填完刪除。
   每條需求格式：FR-<模組>-<序號>: 系統 shall <可觀察行為>。｜優先級 Px｜AC: <可測>｜來源: <persona/目標>｜依賴: <FR-x>
-  完成後跑：python scripts/prd_lint.py <本檔> 應 exit 0。
+  完成後跑：py scripts/prd_lint.py <本檔>（Windows）/ python3 scripts/prd_lint.py <本檔>（macOS/Linux），應 exit 0。
   對應各節細則見 references/NN_*/_index.md。
 -->
 

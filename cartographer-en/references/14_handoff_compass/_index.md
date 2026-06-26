@@ -29,7 +29,7 @@
 
 ## Convert to Compass's prd-checklist.md
 
-Expand each FR/NFR into Compass checklist items (matching Compass `templates/prd-checklist.md.template`):
+Expand each FR/NFR into Compass checklist items (matching `compass/templates/prd-checklist.md.template`):
 
 ```markdown
 ## PRD Checklist (handoff to Compass)

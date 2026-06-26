@@ -37,10 +37,13 @@ NFR-SEC-01 API authz     ──▶ (prerequisite for all PAY requirements)
 
 ## Milestone table
 
-| Milestone | Content (slice) | Requirements | DoD | Hard date |
-|---|---|---|---|---|
-| M1 | Guest card checkout | FR-PAY-01..03, NFR-SEC-01 | Real sandbox payment succeeds + load test passes | — |
-| M2 | Saved card + mobile pay | FR-PAY-04.., FR-ADDR-* | Apple/Google Pay pass | before peak season |
+| Milestone | Content (slice) | Requirements | Scale | DoD | Hard date |
+|---|---|---|---|---|---|
+| M1 | Guest card checkout | FR-PAY-01..03, NFR-SEC-01 | M | Real sandbox payment succeeds + load test passes | — |
+| M2 | Saved card + mobile pay | FR-PAY-04.., FR-ADDR-* | S | Apple/Google Pay pass | before peak season |
+
+> **Scale**: tag each milestone with a rough T-shirt estimate (S/M/L) for PM scheduling — the PRD gives only a scale; precise effort points are the engineering estimate's job.
+> **Release/canary/rollback**: these are build-time strategies (feature flag, canary, rollback) and are **picked up by Compass after handoff**; here the PRD only marks "hard dates" and "validate high-risk assumptions early".
 
 ---
 
