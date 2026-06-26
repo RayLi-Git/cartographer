@@ -1,78 +1,78 @@
-# §12 里程碑與發布切片｜可獨立交付的小塊，按依賴排序
+# §12 Milestones & Release Slices | Independently shippable slices, ordered by dependency
 
-> 對應 AirPods 的 Milestones（概念→設計→凍結→發布）。軟體要再加兩樣範本沒有的：**垂直切片**（每塊端到端可用、可驗收）與**需求依賴排序**（餵 compass 的施工順序）。呼應 CLAUDE.md：完成就是完成，可分小塊交付，但不留半成品階段。
-
----
-
-## 引導問題
-
-1. 能切成哪幾個**端到端可獨立交付**的里程碑？（不是「先做後端再做前端」這種橫切）
-2. §06 需求之間的**依賴**是什麼？哪些必須先做？
-3. §03 的**高風險假設**要排在哪個早期里程碑驗證？
-4. 每個里程碑的**完成定義（DoD）**與 demo 標準是什麼？
-5. 有哪些**硬時點**（死線、法遵、活動檔期）？
+> Maps to AirPods' Milestones (concept → design → freeze → release). Software adds two things the template lacked: **vertical slices** (each end-to-end usable and verifiable) and **requirement dependency ordering** (Compass's build order). Echoing the house rule: done means done — ship in small slices, but leave no half-finished phases.
 
 ---
 
-## 垂直切片 ≠ 橫切階段
+## Guiding questions
 
-| ✅ 垂直切片（每塊可用） | ❌ 橫切階段（半成品） |
+1. Into which **end-to-end, independently shippable** milestones can it be sliced? (not "backend first, then frontend" — that's horizontal)
+2. What are the **dependencies** among §06 requirements? Which must come first?
+3. Which **high-risk assumptions** (§03) validate in which early milestone?
+4. What's each milestone's **definition of done (DoD)** and demo bar?
+5. Any **hard dates** (deadline, compliance, campaign window)?
+
+---
+
+## Vertical slice ≠ horizontal phase
+
+| ✅ Vertical slice (each usable) | ❌ Horizontal phase (half-finished) |
 |---|---|
-| M1：訪客單一信用卡結帳，端到端能付款成功 | 階段1：做完所有後端 API（前端還不能用） |
-| M2：加綁卡 + Apple Pay | 階段2：做完所有前端（接不上） |
+| M1: guest single-card checkout, end-to-end payment success | Phase 1: finish all backend APIs (frontend unusable) |
+| M2: add saved card + Apple Pay | Phase 2: finish all frontend (can't connect) |
 
-> 每個切片內含它需要的功能/NFR/資安，端到端走得通、可驗收。
-
----
-
-## 需求依賴排序（交棒 compass 的施工順序）
-
-```
-FR-PAY-01 建立付款意圖  ──▶ FR-PAY-02 送出付款 ──▶ FR-PAY-03 逾時處理
-NFR-SEC-01 API 授權     ──▶（所有 PAY 需求的前置）
-```
-> 依賴圖直接成為 §14 交棒時 compass 的實作順序輸入。高風險假設（§03）對應的驗證需求排最前。
+> Each slice contains the features/NFR/security it needs, works end-to-end, and is verifiable.
 
 ---
 
-## 里程碑表
+## Requirement dependency ordering (Compass's build order on handoff)
 
-| 里程碑 | 內容（切片） | 含需求 | 量級 | DoD | 硬時點 |
+```
+FR-PAY-01 create intent  ──▶ FR-PAY-02 submit payment ──▶ FR-PAY-03 timeout handling
+NFR-SEC-01 API authz     ──▶ (prerequisite for all PAY requirements)
+```
+> The dependency graph becomes Compass's implementation-order input at §14 handoff. The validation requirements for high-risk assumptions (§03) go first.
+
+---
+
+## Milestone table
+
+| Milestone | Content (slice) | Requirements | Scale | DoD | Hard date |
 |---|---|---|---|---|---|
-| M1 | 訪客信用卡結帳 | FR-PAY-01..03, NFR-SEC-01 | M | 真實沙箱付款成功 + 壓測達標 | — |
-| M2 | 綁卡 + 行動支付 | FR-PAY-04.., FR-ADDR-* | S | Apple/Google Pay 通過 | 旺季前 |
+| M1 | Guest card checkout | FR-PAY-01..03, NFR-SEC-01 | M | Real sandbox payment succeeds + load test passes | — |
+| M2 | Saved card + mobile pay | FR-PAY-04.., FR-ADDR-* | S | Apple/Google Pay pass | before peak season |
 
-> **量級**：每里程碑標個 T-shirt 概估（S/M/L），供 PM 排期——PRD 只給量級，精算工時是工程估點的事。
-> **發布/灰度/回滾**：屬施工期策略（feature flag、canary、rollback），**交棒後由 compass 接手**；PRD 這裡只標「硬時點」與「高風險假設要早驗」。
-
----
-
-## 常見陷阱
-
-- **橫切階段留半成品**：違反「不留半成品」。改成垂直切片。
-- **忽略依賴硬排日期**：沒先排依賴 → 後面卡前面。先畫依賴圖再排程。
-- **高風險假設拖到最後**：§03 高機率×高衝擊的假設要最早驗證，免得做一半才發現方向錯。
-- **里程碑沒有 DoD**：什麼叫「M1 完成」說不清 → 無法驗收。
+> **Scale**: tag each milestone with a rough T-shirt estimate (S/M/L) for PM scheduling — the PRD gives only a scale; precise effort points are the engineering estimate's job.
+> **Release/canary/rollback**: these are build-time strategies (feature flag, canary, rollback) and are **picked up by Compass after handoff**; here the PRD only marks "hard dates" and "validate high-risk assumptions early".
 
 ---
 
-## 品質閘（過了才進 §13）
+## Common traps
 
-- ✅ 里程碑是**垂直切片**，每塊端到端可驗收
-- ✅ 需求依賴圖畫出來了，排程尊重依賴
-- ✅ 高風險假設（§03）排進早期里程碑驗證
-- ✅ 每個里程碑有 DoD 與 demo 標準
+- **Horizontal phases leaving half-products**: violates "no half-finished". Use vertical slices.
+- **Scheduling dates ignoring dependencies**: order without dependency → later blocks earlier. Draw the dependency graph before scheduling.
+- **High-risk assumptions deferred to the end**: §03 high-prob × high-impact assumptions validate earliest, lest you find the direction wrong halfway.
+- **Milestones with no DoD**: "M1 done" undefined → unverifiable.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §13)
+
+- ✅ Milestones are **vertical slices**, each end-to-end verifiable
+- ✅ The dependency graph is drawn; scheduling respects dependencies
+- ✅ High-risk assumptions (§03) scheduled for early-milestone validation
+- ✅ Each milestone has a DoD and demo bar
+
+---
+
+## Format snippet
 
 ```markdown
-## 12. 里程碑與發布切片
+## 12. Milestones & Release Slices
 
-**依賴**：FR-PAY-01 → FR-PAY-02 → FR-PAY-03；NFR-SEC-01 為前置
+**Dependencies**: FR-PAY-01 → FR-PAY-02 → FR-PAY-03; NFR-SEC-01 is prerequisite
 
-| 里程碑 | 切片內容 | 含需求 | DoD | 硬時點 |
-|--------|---------|--------|-----|--------|
+| Milestone | Slice content | Requirements | DoD | Hard date |
+|-----------|---------------|--------------|-----|-----------|
 | M1 | ... | FR-..., NFR-... | ... | ... |
 ```

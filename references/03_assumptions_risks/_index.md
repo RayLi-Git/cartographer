@@ -1,71 +1,71 @@
-# §03 假設·約束·風險｜把「沒想清楚的」攤在桌上
+# §03 Assumptions / Constraints / Risks | Put the unresolved on the table
 
-> 這節是多視角檢視後**新增**的——AirPods 範本把風險全混進 Open Questions，導致「未決問題」和「可能害死專案的風險」沒分級。一份成熟 PRD 要把三樣分開：**假設（我賭它成立）/ 約束（我不能改的邊界）/ 風險（可能出事＋怎麼擋）**。
-
----
-
-## 引導問題
-
-1. 這份 PRD 成立的**前提假設**有哪些？（哪些一旦不成立，整個方案就垮？）
-2. 有哪些**不能改的約束**？技術棧、預算、死線、既有系統、法遵、團隊人力。
-3. 最可能**出事的地方**是什麼？發生機率多高、衝擊多大、怎麼緩解、誰負責？
-4. 哪些假設**可以提早驗證**？（高風險假設 → 排進 §12 里程碑早期驗證）
+> This section was **added** after the multi-perspective review — the AirPods PRD lumped all risk into Open Questions, so "undecided questions" and "things that could kill the project" weren't separated. A mature PRD splits three things: **assumptions (what we bet on) / constraints (boundaries I can't change) / risks (what could go wrong + how to block it)**.
 
 ---
 
-## 三者的差別
+## Guiding questions
 
-| 類別 | 問句 | 例子 |
+1. What **premises** must hold for this PRD? (which, if false, collapse the whole approach?)
+2. What **constraints can't change**? Tech stack, budget, deadline, existing systems, compliance, headcount.
+3. Where is it **most likely to go wrong**? How likely, how big the impact, how to mitigate, who owns it?
+4. Which assumptions can be **validated early**? (high-risk assumptions → schedule early validation in §12)
+
+---
+
+## The difference between the three
+
+| Type | Question | Example |
 |---|---|---|
-| **假設** | 「我們賭什麼成立？」 | 金流商 SLA 99.95%；使用者願意綁卡 |
-| **約束** | 「什麼我不能改？」 | 必須跑在現有 K8s；預算 80 萬；6 月底上線 |
-| **風險** | 「什麼可能害我們？怎麼擋？」 | 金流商當機 → 降級備援 + 對帳補償 |
+| **Assumption** | "What are we betting holds?" | Payment provider SLA 99.95%; users willing to save a card |
+| **Constraint** | "What can't I change?" | Must run on existing K8s; budget 800k; ship by end of June |
+| **Risk** | "What could hurt us? How do we block it?" | Provider outage → degraded fallback + reconciliation |
 
 ---
 
-## 風險登記表（機率 × 衝擊 → 緩解）
+## Risk register (probability × impact → mitigation)
 
-| ID | 風險 | 機率 | 衝擊 | 緩解措施 | Owner |
-|----|------|------|------|----------|-------|
-| R-1 | 金流商回呼延遲導致重複扣款 | 中 | 高 | 冪等鍵 + 對帳重試 + 告警 | 後端 |
-| R-2 | 旺季流量 10x 壓垮結帳 | 中 | 高 | 壓測 + 自動擴容 + 排隊頁 | SRE |
-| R-3 | ⚠️推測 使用者不願綁卡 | 高 | 中 | 提供訪客結帳 / 第三方支付 | PM |
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | Callback delay causes double charge | Med | High | Idempotency key + reconciliation retry + alert | Backend |
+| R-2 | 10x peak traffic crushes checkout | Med | High | Load test + autoscale + queue page | SRE |
+| R-3 | ⚠️assumption users won't save a card | High | Med | Guest checkout / third-party pay | PM |
 
-> **高機率×高衝擊**的風險 → 必須在 §12 里程碑早期就設驗證/緩解，不能拖到上線前。
-
----
-
-## 常見陷阱
-
-- **把風險寫成開放問題**：「金流會不會出事？」是疑問句不是風險。風險要寫「**會發生什麼 + 機率 + 衝擊 + 怎麼擋**」。純未決問題留 §11。
-- **假設沒人負責驗證**：高風險假設要指派 owner + 驗證時點，否則就是定時炸彈。
-- **約束沒寫死**：「大概 6 月吧」→ 約束要明確，否則 §12 排程是空的。
-- **只列風險不列緩解**：沒有緩解的風險登記只是焦慮清單。
+> **High-probability × high-impact** risks → must set validation/mitigation early in §12 milestones, not deferred to pre-launch.
 
 ---
 
-## 品質閘（過了才進 §04）
+## Common traps
 
-- ✅ 假設、約束、風險三者分開列
-- ✅ 每條風險有機率、衝擊、**緩解措施**、owner
-- ✅ 高機率×高衝擊的風險已標記要進 §12 早期驗證
-- ✅ 從 §02 搬來的假設都已落地到這裡
+- **Writing a risk as an open question**: "will payments fail?" is a question, not a risk. A risk states "**what happens + probability + impact + how to block**". Pure open questions belong in §11.
+- **Assumptions with no owner to validate**: a high-risk assumption needs an owner + validation time, or it's a time bomb.
+- **Vague constraints**: "around June" → constraints must be exact, or §12 scheduling is empty.
+- **Listing risks without mitigation**: a risk register with no mitigations is just an anxiety list.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §04)
+
+- ✅ Assumptions, constraints, risks listed separately
+- ✅ Every risk has probability, impact, **mitigation**, owner
+- ✅ High-prob × high-impact risks flagged for early validation in §12
+- ✅ Hypotheses moved here from §02 have landed
+
+---
+
+## Format snippet
 
 ```markdown
-## 3. 假設、約束與風險
+## 3. Assumptions, Constraints & Risks
 
-**假設（賭它成立）**
-- A-1: <假設> ｜驗證方式: <如何/何時驗證> ｜owner: <誰>
+**Assumptions (we bet they hold)**
+- A-1: <assumption> | validation: <how/when> | owner: <who>
 
-**約束（不能改的邊界）**
-- C-1: <技術/預算/死線/法遵約束>
+**Constraints (boundaries we can't change)**
+- C-1: <tech/budget/deadline/compliance constraint>
 
-**風險登記**
-| ID | 風險 | 機率 | 衝擊 | 緩解 | Owner |
-|----|------|------|------|------|-------|
-| R-1 | ... | 高/中/低 | 高/中/低 | ... | ... |
+**Risk register**
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | ... | High/Med/Low | High/Med/Low | ... | ... |
 ```

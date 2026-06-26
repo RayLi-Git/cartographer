@@ -1,71 +1,71 @@
-# §02 目標與成功指標｜可量測，否則不算目標
+# §02 Objectives & Success Metrics | Measurable, or it's not an objective
 
-> 對應 AirPods 的 Objectives。這節最大的陷阱，正是 AirPods 範本犯的：**把假設當事實寫**（「adding smart interactions **will** expand user base by 15%」）。我會逼你把三樣東西分開：**目標 / 假設 / 事實**，而且每個目標都要能量測。
-
----
-
-## 引導問題
-
-1. 這個產品/功能成功的**唯一最重要指標**（North Star）是什麼？
-2. 圍繞它有哪些**支撐 KPI**？每個的**現值 → 目標值 → 期限**是多少？
-3. 每個指標**怎麼量測**？用哪個埋點/事件/報表？（量不到的指標 = 不存在的指標）
-4. 哪些是你**相信但還沒驗證的假設**？（搬去假設區，別混進目標）
-5. 有沒有**反指標 / 護欄指標**？（例如「提升轉換但客訴不可上升超過 5%」）
+> Maps to AirPods' Objectives. The biggest trap here is exactly the one the AirPods PRD fell into: **stating a hypothesis as fact** ("adding smart interactions **will** expand user base by 15%"). I force three things apart: **goal / hypothesis / fact**, and every goal must be measurable.
 
 ---
 
-## 目標 / 假設 / 事實，三者分開
+## Guiding questions
 
-| 類別 | 定義 | 寫法 |
+1. What is the single most important metric (**North Star**) for this product/feature?
+2. What **supporting KPIs** surround it? For each, what's the **current → target → deadline**?
+3. **How is each measured** — which event/instrumentation/report? (a metric you can't measure doesn't exist)
+4. What do you **believe but haven't validated** (hypotheses)? (move them out, don't mix into goals)
+5. Any **counter/guardrail metrics**? (e.g. "lift conversion but complaints must not rise > 5%")
+
+---
+
+## Keep goal / hypothesis / fact apart
+
+| Type | Definition | How to write |
 |---|---|---|
-| **目標** | 我們要達成、且可量測 | 「結帳成功率 99.2% → 99.5%，2026 Q3 前」 |
-| **假設** | 相信但未驗證（→ 也記進 §03） | 「⚠️推測 一鍵結帳可降棄單 10%」 |
-| **事實** | 已查證（來自 §01 證據） | 「目前棄單率 38%（GA 近 3 月）」 |
+| **Goal** | What we aim for, and measurable | "checkout success 99.2% → 99.5% by 2026 Q3" |
+| **Hypothesis** | Believed, unvalidated (→ also log in §03) | "⚠️assumption one-tap checkout cuts abandonment 10%" |
+| **Fact** | Verified (from §01 evidence) | "abandonment is 38% (GA, last 3 months)" |
 
 ---
 
-## 「好」長什麼樣（正 vs 反）
+## What "good" looks like (good vs bad)
 
-✅ **好**：
-> **North Star**：月結帳成功訂單數。
-> **O-1 結帳成功率** 99.2% → **99.5%**，2026/09 前｜量測：`checkout_succeeded / checkout_started`
-> **O-2 結帳棄單率** 38% → **30%**，2026/09 前｜量測：漏斗事件 `cart→address→pay→done`
-> **護欄**：付款相關客訴量不得較上季上升 >5%。
+✅ **Good**:
+> **North Star**: monthly successful checkout orders.
+> **O-1 checkout success** 99.2% → **99.5%** by 2026/09 | measure: `checkout_succeeded / checkout_started`
+> **O-2 abandonment** 38% → **30%** by 2026/09 | measure: funnel events `cart→address→pay→done`
+> **Guardrail**: payment-related complaints must not rise > 5% vs last quarter.
 
-❌ **壞**（AirPods 式）：
-> 「擴大用戶基礎、提升體驗，並相信新功能將帶來 15% 成長。」——無現值、無期限、無量測機制，且把假設當結論。
-
----
-
-## 常見陷阱
-
-- **目標不可量測**：「提升使用者滿意度」→ 改成「NPS 32 → 40」或「結帳客訴率 X% → Y%」。
-- **沒有量測機制**：指標訂了卻沒人知道哪裡看數字 → 上線後無法判斷成敗。每個指標都要綁一個事件/報表。
-- **假設偽裝成目標**：凡是「我相信 / 應該會 / 預期帶來」→ 標 `⚠️推測` 移 §03。
-- **只有好處沒有護欄**：優化一個數字常犧牲另一個，補反指標。
+❌ **Bad** (AirPods style):
+> "Expand the user base, improve experience, and we believe new features will bring 15% growth." — no current value, no deadline, no measurement, and a hypothesis stated as a conclusion.
 
 ---
 
-## 品質閘（過了才進 §03）
+## Common traps
 
-- ✅ 有一個明確 North Star
-- ✅ 每個 KPI 都有「現值 → 目標值 → 期限」**且**綁定量測機制
-- ✅ 目標 / 假設 / 事實已分開，假設已標記並準備搬 §03
-- ✅ 至少一個護欄/反指標
+- **Unmeasurable goal**: "improve satisfaction" → make it "NPS 32 → 40" or "checkout complaint rate X% → Y%".
+- **No measurement mechanism**: a metric set with nobody knowing where to read it → can't judge success after launch. Bind each metric to an event/report.
+- **Hypothesis disguised as goal**: anything "I believe / should / expected to bring" → mark `⚠️assumption`, move to §03.
+- **Benefits with no guardrail**: optimizing one number often sacrifices another; add counter-metrics.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §03)
+
+- ✅ One clear North Star
+- ✅ Every KPI has "current → target → deadline" **and** a bound measurement mechanism
+- ✅ Goal / hypothesis / fact separated; hypotheses marked and ready to move to §03
+- ✅ At least one guardrail/counter-metric
+
+---
+
+## Format snippet
 
 ```markdown
-## 2. 目標與成功指標
+## 2. Objectives & Success Metrics
 
-**North Star**：<單一最重要指標>
+**North Star**: <single most important metric>
 
-| ID | 目標 | 現值 → 目標值 | 期限 | 量測機制（事件/報表） |
-|----|------|--------------|------|----------------------|
+| ID | Goal | Current → Target | Deadline | Measurement (event/report) |
+|----|------|------------------|----------|----------------------------|
 | O-1 | ... | 99.2% → 99.5% | 2026 Q3 | checkout_succeeded/started |
 
-**護欄指標**：<不可惡化的指標>
-**假設（待驗證，詳見 §03）**：⚠️推測 ...
+**Guardrails**: <metric that must not degrade>
+**Hypotheses (unvalidated, see §03)**: ⚠️assumption ...
 ```

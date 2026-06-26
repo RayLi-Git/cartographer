@@ -1,76 +1,76 @@
-# §06 功能需求 ★｜PRD 的心臟
+# §06 Functional Requirements ★ | The heart of the PRD
 
-> 這是整份 PRD 最核心、也最容易寫爛的一節。AirPods 範本在這裡犯了致命的不一致：規範測試(7.x)條條可驗收，但功能(1–5)很多不可驗收（`1.6 as small as possible`、`3.5 intuitive for all`）。**我反過來——每條功能需求一律強制可驗收，不分功能/非功能。**
+> The most core — and most often botched — section. The AirPods PRD made a fatal inconsistency here: its regulation tests (7.x) are each verifiable, but its features (1–5) often aren't (`1.6 as small as possible`, `3.5 intuitive for all`). **I do the opposite — every functional requirement is mandatorily verifiable, no exceptions for features.**
 
 ---
 
-## 每條需求的鐵律：原子＋編號＋優先級＋AC＋來源
+## The iron rule per requirement: atomic + numbered + priority + AC + source
 
 ```
-FR-PAY-03: 系統 shall 在金流回呼逾時 30 秒後將訂單標記為 pending 並觸發對帳重試。｜P0 ｜AC: 逾時第 31 秒訂單狀態=pending；5 分鐘內最多重試 3 次；每次重試寫稽核日誌 ｜來源: 場景#2 結帳中斷 / 目標 O-1「結帳成功率 ≥ 99.5%」 ｜依賴: FR-PAY-01
+FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout. | P0 | AC: at second 31 order status = pending; at most 3 retries within 5 min; each retry writes an audit log | Source: Scenario #2 interrupted checkout / Objective O-1 "checkout success ≥ 99.5%" | Depends: FR-PAY-01
 ```
 
-> **一條一行、欄位用全形 ｜ 分隔**——這是 `prd_lint.py` 唯一認的格式，**分行寫每個欄位會被當成缺漏擋下**。（優先級註：P0 上線阻斷／P1 高／P2 中／P3 未來）
+> **One requirement per line, fields separated by `|`** — this is the only format `prd_lint.py` recognizes; **splitting each field onto its own line gets it counted as missing and blocked**. (Priority note: P0 launch-blocking / P1 high / P2 medium / P3 future.)
 
-| 要素 | 規則 |
+| Element | Rule |
 |---|---|
-| **原子** | 一條一件事。出現「並且/以及」串多動作 → 拆成多條 |
-| **編號** | `FR-<模組>-<序號>`，全 PRD 唯一、可被 §14 矩陣引用 |
-| **shall 句** | 「系統 shall <可觀察行為>」，主詞明確、動詞可觀察 |
-| **優先級** | P0/P1/P2/P3，並能說出**為什麼**是這級 |
-| **AC** | 可測：有數字、或 Given/When/Then、或明確狀態轉移 |
-| **來源** | 追回某 persona/場景 + 某目標（無來源的需求要質疑存在必要）；🟢 輕級未走 §02/§05 時，可追 §01 痛點 |
+| **Atomic** | One thing per requirement. "and/also" chaining multiple actions → split |
+| **Numbered** | `FR-<module>-<n>`, unique across the PRD, referenceable by the §14 matrix |
+| **shall clause** | "The system shall <observable behavior>", explicit subject, observable verb |
+| **Priority** | P0/P1/P2/P3, and you can say **why** that level |
+| **AC** | Verifiable: has numbers, or Given/When/Then, or explicit state transition |
+| **Source** | Traces to a persona/scenario + an objective (question any requirement with no source); on a 🟢 light task that skips §02/§05, it may trace back to a §01 pain point |
 
 ---
 
-## happy path 之外：強制寫「負向 / 邊界 / 狀態」
+## Beyond the happy path: mandatory "negative / edge / state"
 
-AirPods 3.4「拔出自動暫停」只寫順流。軟體必須補：
+AirPods' 3.4 "auto-pause on removal" wrote only the forward flow. Software must add:
 
-- **負向**：付款失敗、餘額不足、卡片過期、重複提交 → 各一條需求
-- **邊界**：金額為 0、購物車空、庫存剛好歸零、並發下單
-- **狀態態**（UI 五態）：空 / 載入中 / 成功 / 錯誤 / 離線——每個關鍵畫面都要交代
-- **冪等/併發**：可重試的操作要定義冪等鍵與重複請求行為
+- **Negative**: payment failed, insufficient funds, expired card, double submit → one requirement each
+- **Edge**: amount = 0, empty cart, stock hitting exactly zero, concurrent orders
+- **States** (the UI five states): empty / loading / success / error / offline — for every key screen
+- **Idempotency/concurrency**: retryable operations need an idempotency key and defined duplicate-request behavior
 
-> 經驗法則：一條 happy path 需求，平均牽出 2–4 條負向/邊界/狀態需求。寫完一條主流程就追問「會怎麼壞？」
-
----
-
-## 「好」vs「壞」
-
-✅ `FR-ADDR-02: 系統 shall 在地址欄位失焦時即時驗證郵遞區號格式，錯誤時於欄位下方顯示提示。優先級 P1｜AC: 輸入非 5 碼數字，失焦後 200ms 內顯示「郵遞區號需為 5 碼」｜來源: P1 怡君「填地址太繁瑣」`
-
-❌ `結帳要簡單好用、流程順暢。`（不可量測、無編號、無 AC、無來源——AirPods 3.5 同款病）
+> Rule of thumb: one happy-path requirement averages 2–4 negative/edge/state requirements. After writing a main flow, ask "how does it break?"
 
 ---
 
-## 常見陷阱
+## Good vs bad
 
-- **一句包三件事** → 拆。
-- **形容詞當需求**（快/好/友善/直覺/無縫/盡量）→ `prd_lint.py` 會擋；翻成數字或可觀察行為。
-- **只有 happy path** → 補負向/邊界/狀態。
-- **優先級全 P0** → 全部最高＝沒有優先級；逼自己分層。
-- **無來源的孤兒需求** → 回 §05 找 persona，找不到就刪或進 §11。
+✅ `FR-ADDR-02: The system shall validate postal-code format on blur and show an inline error. Priority P1 | AC: entering a non-5-digit value shows "postal code must be 5 digits" within 200ms of blur | Source: P1 Yi-Jun "address too tedious"`
+
+❌ `Checkout should be simple, easy, and smooth.` (unmeasurable, unnumbered, no AC, no source — same disease as AirPods 3.5)
 
 ---
 
-## 品質閘（過了才進 §07）
+## Common traps
 
-- ✅ 每條都符合「原子＋編號＋優先級＋AC＋來源」（跑 `prd_lint.py` 為 0 阻斷）
-- ✅ 每個主流程都配了負向/邊界/狀態需求
-- ✅ 優先級有分層、且 P0 能說出為何上線阻斷
-- ✅ 無不可量測形容詞殘留
+- **One line, three things** → split.
+- **Adjectives as requirements** (fast/good/friendly/intuitive/seamless/as possible) → `prd_lint.py` blocks them; turn into numbers or observable behavior.
+- **Only the happy path** → add negative/edge/state.
+- **Everything P0** → all-highest = no priority; force yourself to tier.
+- **Orphan requirement with no source** → go back to §05 for a persona; if none, delete or move to §11.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §07)
+
+- ✅ Every requirement is "atomic + numbered + priority + AC + source" (`prd_lint.py` shows 0 blocking)
+- ✅ Every main flow has negative/edge/state requirements
+- ✅ Priorities are tiered, and each P0 can justify being launch-blocking
+- ✅ No unmeasurable adjectives remain
+
+---
+
+## Format snippet
 
 ```markdown
-## 6. 功能需求
+## 6. Functional Requirements
 
-### 6.1 <模組，如「付款」>
-FR-PAY-01: 系統 shall ... ｜P0 ｜AC: ... ｜來源: 場景#x / O-x ｜依賴: -
-FR-PAY-02: 系統 shall ... ｜P1 ｜AC: Given... When... Then... ｜來源: ...
-  # 負向 / 邊界 / 狀態
-FR-PAY-03: 系統 shall 在付款失敗時 ... ｜P0 ｜AC: ...
+### 6.1 <module, e.g. "Payment">
+FR-PAY-01: The system shall ... | P0 | AC: ... | Source: Scenario #x / O-x | Depends: -
+FR-PAY-02: The system shall ... | P1 | AC: Given... When... Then... | Source: ...
+  # negative / edge / state
+FR-PAY-03: The system shall, on payment failure, ... | P0 | AC: ...
 ```

@@ -1,76 +1,76 @@
-# §05 使用者故事與旅程｜需求的來源
+# §05 User Stories & Journey | Where requirements come from
 
-> 對應 AirPods 的 Use Cases（Jenna / William / Keith 三個 persona）。範本的 persona 很生動，但缺兩樣軟體必備：**反向 persona**（這產品不為誰做）與**旅程/狀態**（happy path 以外的岔路）。每條功能需求最後都要能追回這裡的某個 persona/場景。
-
----
-
-## 引導問題
-
-1. 主要 persona 是誰？**情境、目標、痛點**各是什麼？（給名字，像 AirPods 的 Jenna）
-2. 這產品**不為誰**做？（反向 persona——避免範圍被邊緣使用者拖垮）
-3. 一個典型 persona 走完整段流程的**旅程**是什麼？從哪裡進、到哪裡完成？
-4. 旅程中哪裡會**岔路 / 出錯 / 中斷**？（沒網路、付款失敗、權限不足）
-5. 每個 persona 的**成功定義**是什麼？（連回 §02 目標）
+> Maps to AirPods' Use Cases (the Jenna / William / Keith personas). The template's personas are vivid but miss two software essentials: the **anti-persona** (who it's *not* for) and the **journey/states** (the branches beyond the happy path). Every functional requirement must eventually trace back to a persona/scenario here.
 
 ---
 
-## persona 寫法（學 AirPods 的敘事力）
+## Guiding questions
+
+1. Who are the main personas? Their **context, goal, pain**? (give them names, like Jenna)
+2. Who is this **not** for? (anti-persona — keeps scope from being dragged down by edge users)
+3. What's a typical persona's **journey** through the whole flow? Where do they enter, where do they finish?
+4. Where does the journey **branch / fail / interrupt**? (no network, payment fails, no permission)
+5. What's each persona's **success definition**? (link back to §02 objectives)
+
+---
+
+## Persona writing (borrow AirPods' narrative power)
 
 ```
-**P1 忙碌的回購客 — 怡君**
-35 歲上班族，手機下單為主，已綁過卡。她要的是「3 步內結完帳」，最怕
-「填一堆地址」和「付款失敗不知道為什麼」。成功＝60 秒內完成結帳。
+**P1 the busy repeat buyer — Yi-Jun**
+35, office worker, mostly mobile, card already saved. She wants "checkout done in 3 steps",
+fears "filling in lots of address fields" and "payment fails with no reason". Success = checkout in 60s.
 ```
 
-**反向 persona**（同樣重要）：
+**Anti-persona** (just as important):
 ```
-**非目標：批發大量採購者** — 需要報價單、月結、發票抬頭批改，
-本次結帳流程不為他們設計，導向業務專線（記入 §10 範圍邊界）。
+**Non-target: bulk wholesale buyers** — need quotes, net terms, batch invoice edits;
+this checkout is not designed for them, route to the sales line (logged in §10).
 ```
 
 ---
 
-## 使用者旅程（含岔路，不只 happy path）
+## User journey (with branches, not just the happy path)
 
 ```
-購物車 → 填/選地址 → 選付款方式 → 付款中 → ✅成功頁
-                                   ├─ ❌付款失敗 → 可重試/換方式
-                                   ├─ ⏳逾時 → 訂單 pending + 通知
-                                   └─ 🔌斷線 → 保留購物車、回來可續
+Cart → enter/select address → choose payment → paying → ✅ success page
+                                              ├─ ❌ payment failed → retry/switch method
+                                              ├─ ⏳ timeout → order pending + notify
+                                              └─ 🔌 disconnect → keep cart, resume later
 ```
-> 旅程裡的每個岔路，都會在 §06 變成一條「負向/狀態」需求。
+> Every branch in the journey becomes a "negative/state" requirement in §06.
 
 ---
 
-## 常見陷阱
+## Common traps
 
-- **persona 是空殼**：「使用者」太籠統。給名字、情境、痛點，需求才有依據。
-- **只畫 happy path**：AirPods 的 3.4「拔出自動暫停」只寫順流，沒寫半拔/雙拔。旅程一定要標岔路。
-- **沒有反向 persona**：什麼人都想服務 → 範圍爆炸。明寫「不為誰做」。
-- **persona 與目標脫鉤**：每個 persona 的成功要能對到 §02 的某個指標。
-
----
-
-## 品質閘（過了才進 §06）
-
-- ✅ 每個主要 persona 有情境、目標、痛點，且成功定義連回 §02
-- ✅ 至少一個反向 persona（→ 記入 §10）
-- ✅ 主旅程畫出來了，且**標出岔路/錯誤/中斷點**（→ 餵 §06 負向需求）
+- **Hollow persona**: "the user" is too vague. Give a name, context, pain — then requirements have a basis.
+- **Only the happy path**: AirPods' 3.4 "auto-pause on removal" wrote only the forward flow, not partial/both removal. Always mark journey branches.
+- **No anti-persona**: trying to serve everyone → scope explosion. Explicitly state who it's not for.
+- **Personas disconnected from objectives**: each persona's success should map to a §02 metric.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §06)
+
+- ✅ Each main persona has context, goal, pain, with success linked back to §02
+- ✅ At least one anti-persona (→ logged in §10)
+- ✅ The main journey is drawn, with **branches/errors/interruptions marked** (→ feeds §06 negative requirements)
+
+---
+
+## Format snippet
 
 ```markdown
-## 5. 使用者故事與旅程
+## 5. User Stories & Journey
 
 ### Persona
-**P1 <名字>**：<情境>。目標：<...>。痛點：<...>。成功：<連回某 O-x>。
+**P1 <name>**: <context>. Goal: <...>. Pain: <...>. Success: <link to some O-x>.
 
-### 反向 Persona（不為誰做）
-- <角色> → 原因 / 導向（記入 §10）
+### Anti-persona (not for whom)
+- <role> → reason / route (logged in §10)
 
-### 主旅程
-<起點> → <步驟> → <完成>
-  岔路：❌<錯誤> / ⏳<逾時> / 🔌<中斷>
+### Main journey
+<start> → <steps> → <finish>
+  branches: ❌<error> / ⏳<timeout> / 🔌<interruption>
 ```

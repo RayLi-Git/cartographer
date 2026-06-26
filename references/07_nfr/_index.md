@@ -1,62 +1,62 @@
-# §07 非功能需求（NFR）｜最常被漏的一節
+# §07 Non-Functional Requirements (NFR) | The most-dropped section
 
-> 對應 AirPods 把最大篇幅給了規範測試(7.x)——而且條條量化（1.22m 落下、5% 鹽霧 24h）。軟體的等價物就是 NFR，卻最常被新手 PRD 整段跳過。這裡用 AirPods 同樣的精神：**每條 NFR 都要可量化**，不准寫「要快、要穩」。
+> AirPods gave its largest space to regulation tests (7.x) — and each is quantified (drop from 1.22m, 5% salt fog for 24h). The software equivalent is NFRs, yet beginners skip the whole section. Use the same spirit as AirPods: **every NFR must be quantifiable**, no "fast, stable".
 >
-> 註：資安與隱私雖也是 NFR，但因份量與風險，**獨立成 §08**。本節涵蓋效能/可用性/可觀測/無障礙/i18n。
+> Note: security and privacy are also NFRs, but given their weight and risk they get their own **§08**. This section covers performance/availability/observability/accessibility/i18n.
 
 ---
 
-## 引導問題
+## Guiding questions
 
-1. **效能**：關鍵操作的延遲目標？（p50/p95/p99）尖峰 QPS？
-2. **可用性/SLA**：服務要幾個 9？容許停機多久？降級策略？
-3. **可觀測性**：出事時怎麼知道？要哪些指標、日誌、追蹤、告警？
-4. **無障礙**：要符合 WCAG 哪一級？鍵盤操作、螢幕報讀？
-5. **i18n/l10n**：多語系？多幣別/時區？文字長度膨脹？
+1. **Performance**: latency target for key operations? (p50/p95/p99) Peak QPS?
+2. **Availability/SLA**: how many nines? Allowed downtime? Degradation strategy?
+3. **Observability**: how do you know when it breaks? Which metrics, logs, traces, alerts?
+4. **Accessibility**: which WCAG level? Keyboard operation, screen readers?
+5. **i18n/l10n**: multiple locales? Currencies/time zones? Text expansion?
 
 ---
 
-## NFR 類別與量化範例
+## NFR categories and quantified examples
 
-| 類別(代號) | 不可量測（壞） | 可量化（好） |
+| Category (code) | Unmeasurable (bad) | Quantified (good) |
 |---|---|---|
-| 效能 PERF | 「結帳要快」 | `NFR-PERF-01: 結帳送出到結果頁 p95 < 1.5s（尖峰 500 QPS）` |
-| 可用性 SLA | 「要穩定」 | `NFR-SLA-01: 付款服務月可用性 ≥ 99.95%，金流商當機時降級為稍後通知` |
-| 可觀測 OBS | 「要能監控」 | `NFR-OBS-01: 每筆付款發 checkout_* 事件；失敗率 >2% 連續 5 分鐘觸發 PagerDuty` |
-| 無障礙 A11Y | 「要友善」 | `NFR-A11Y-01: 結帳全流程可純鍵盤完成，符合 WCAG 2.1 AA` |
-| 國際化 I18N | 「支援多語」 | `NFR-I18N-01: 支援 zh-TW/en，金額依 locale 顯示幣別與千分位` |
+| Performance PERF | "checkout should be fast" | `NFR-PERF-01: checkout submit to result p95 < 1.5s (peak 500 QPS)` |
+| Availability SLA | "should be stable" | `NFR-SLA-01: payment service monthly availability ≥ 99.95%; degrade to notify-later on provider outage` |
+| Observability OBS | "should be monitorable" | `NFR-OBS-01: emit checkout_* per payment; failure rate >2% for 5 min triggers PagerDuty` |
+| Accessibility A11Y | "should be friendly" | `NFR-A11Y-01: full checkout completable by keyboard, WCAG 2.1 AA` |
+| Internationalization I18N | "support multiple languages" | `NFR-I18N-01: support zh-TW/en; show currency and thousands separators per locale` |
 
-> 寫法與 §06 相同：`NFR-<類別>-<序號>` ＋ 優先級 ＋ 可測 AC ＋（可選）來源。
-
----
-
-## 常見陷阱
-
-- **整段跳過**：只寫功能不寫 NFR——這是 PRD 最大的坑。級別 🟡🔴 一律要走本節。
-- **形容詞 NFR**：「高效能、高可用」沒有數字＝沒寫。給 p95、給幾個 9。
-- **可觀測性事後補**：上線才想埋點 → 出事看不到。把指標/告警當需求先寫。
-- **無障礙/i18n 當「之後再說」**：補救成本遠高於一開始就納入。
+> Same form as §06: `NFR-<category>-<n>` + priority + verifiable AC + (optional) source.
 
 ---
 
-## 品質閘（過了才進 §08）
+## Common traps
 
-- ✅ 效能有具體延遲/吞吐目標（含百分位數）
-- ✅ 可用性有 SLA 數字與降級策略
-- ✅ 可觀測性指定了指標/日誌/告警門檻
-- ✅ 視產品需要涵蓋 A11Y（WCAG 等級）與 i18n
-- ✅ 每條都可量測（跑 `prd_lint.py` 無形容詞殘留）
+- **Skipping the whole section**: writing only features — the PRD's biggest pit. Tiers 🟡🔴 must do this section.
+- **Adjective NFRs**: "high performance, high availability" with no numbers = nothing written. Give p95, give the nines.
+- **Observability as an afterthought**: instrumenting at launch → blind when it breaks. Write metrics/alerts as requirements up front.
+- **Accessibility/i18n as "later"**: retrofitting costs far more than designing it in.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §08)
+
+- ✅ Performance has concrete latency/throughput targets (with percentiles)
+- ✅ Availability has SLA numbers and a degradation strategy
+- ✅ Observability specifies metrics/logs/alert thresholds
+- ✅ A11Y (WCAG level) and i18n covered where the product needs them
+- ✅ Every line is measurable (`prd_lint.py` shows no adjectives remaining)
+
+---
+
+## Format snippet
 
 ```markdown
-## 7. 非功能需求
+## 7. Non-Functional Requirements
 
-NFR-PERF-01: <延遲/吞吐，含 p95/p99 與負載條件> ｜P0 ｜AC: ...
-NFR-SLA-01:  <可用性目標 + 降級策略> ｜P0 ｜AC: ...
-NFR-OBS-01:  <指標/日誌/追蹤/告警門檻> ｜P1 ｜AC: ...
-NFR-A11Y-01: <WCAG 等級 + 鍵盤/報讀> ｜P1 ｜AC: ...
-NFR-I18N-01: <語系/幣別/時區> ｜P2 ｜AC: ...
+NFR-PERF-01: <latency/throughput, with p95/p99 and load> | P0 | AC: ...
+NFR-SLA-01:  <availability target + degradation> | P0 | AC: ...
+NFR-OBS-01:  <metrics/logs/traces/alert thresholds> | P1 | AC: ...
+NFR-A11Y-01: <WCAG level + keyboard/reader> | P1 | AC: ...
+NFR-I18N-01: <locales/currency/time zone> | P2 | AC: ...
 ```

@@ -1,90 +1,90 @@
-# §08 資安·隱私·法遵 ★｜深掛 Sentinel
+# §08 Security / Privacy / Compliance ★ | Hooks Sentinel deeply
 
-> 多視角檢視後**升格的獨立模組**。AirPods 範本最大的漏洞就在這：它收健康資料（`2.9 fitness tracking`、`7.8 聽力健康劑量`）卻**整份零隱私處理**——沒有資料分類、保存、同意、加密。健康資料是 GDPR 的特殊類別敏感資料。這個漏洞正是活教材：**只要碰 PII/金流/權限/敏感資料，這節不可跳。**
+> An **elevated standalone module** after the multi-perspective review. The AirPods PRD's biggest hole is right here: it collected health data (`2.9 fitness tracking`, `7.8 hearing-health dose`) with **zero privacy handling** — no data classification, retention, consent, or encryption. Health data is a special category of sensitive data under GDPR. That hole is the live teaching example: **whenever it touches PII/money/permissions/sensitive data, this section cannot be skipped.**
 >
-> 本節直接引用 Sentinel 的資安思考：`sentinel/references/05_security_thinking/`（authn 攻擊面、輸入信任邊界、機密與最小權限、依賴供應鏈）與 `sentinel/references/self_check.md` 紅旗清單。
+> This section directly cites Sentinel's security thinking: `sentinel/references/05_security_thinking/` (authn attack surface, input trust boundaries, secrets & least privilege, dependency supply chain) and the `sentinel/references/self_check.md` red-flag list.
 
 ---
 
-## 引導問題（碰敏感資料就逐題問）
+## Guiding questions (ask each when sensitive data is involved)
 
-1. 這功能會**碰到哪些資料**？逐筆分類：公開 / 內部 / PII / 敏感（金流、健康、生物特徵）。
-2. 資料**怎麼存、存多久、誰能讀**？加密（傳輸中/靜止）怎麼做？
-3. **誰是誰**（authn）、**能做什麼**（authz）？權限模型是什麼？
-4. 哪些**輸入不可信**？注入、偽造、越權、重放怎麼擋？
-5. 要符合哪些**法遵**？GDPR/CCPA/個資法/PCI-DSS？**同意**與**刪除權**怎麼實作？
-6. 用了哪些**第三方/依賴**？供應鏈風險？金鑰怎麼管？
+1. What **data** does this feature touch? Classify each: public / internal / PII / sensitive (money, health, biometrics).
+2. How is data **stored, for how long, who can read it**? How is it encrypted (in transit / at rest)?
+3. **Who is who** (authn), **what can they do** (authz)? What's the permission model?
+4. Which **inputs are untrusted**? How are injection, forgery, privilege escalation, replay blocked?
+5. What **compliance** applies? GDPR/CCPA/local privacy law/PCI-DSS? How are **consent** and **deletion rights** implemented?
+6. Which **third parties/dependencies** are used? Supply-chain risk? How are secrets managed?
 
 ---
 
-## 資料分類表（先分類，才知道要保護什麼）
+## Data classification table (classify first, then know what to protect)
 
-| 資料 | 分類 | 儲存/保存 | 存取控制 | 加密 |
+| Data | Class | Storage/retention | Access control | Encryption |
 |---|---|---|---|---|
-| 卡號 | 敏感(PCI) | **不落地**，交 tokenization | 無人可讀明文 | 全程 TLS + 不存 |
-| 姓名/地址 | PII | 加密欄位，保存依政策 | 角色授權 + 稽核 | 靜止加密 |
-| 訂單金額 | 內部 | 一般 | 角色授權 | 傳輸加密 |
+| Card number | Sensitive (PCI) | **Not stored**, tokenized | No one reads plaintext | TLS throughout + not stored |
+| Name/address | PII | Encrypted columns, retained per policy | Role-authorized + audited | Encrypted at rest |
+| Order amount | Internal | Normal | Role-authorized | Encrypted in transit |
 
 ---
 
-## Sentinel 紅旗，在 PRD 階段就堵（不要等寫 code 才發現）
+## Block Sentinel red flags at PRD stage (don't wait until coding)
 
-| 紅旗（來自 Sentinel `self_check.md`） | 在 PRD 要寫什麼來預防 |
+| Red flag (from Sentinel `self_check.md`) | What to write in the PRD to prevent it |
 |---|---|
-| 寫死金鑰 | NFR/SEC 需求明訂金鑰走 secret manager、可輪替 |
-| 不驗證輸入 | 每個外部輸入點訂驗證/拒絕規則（信任邊界） |
-| 給過大權限 | 權限模型最小化、預設拒絕 |
-| 吞錯誤 | 失敗要可觀測、可稽核，不可靜默 |
-| 敏感資料明文 | 資料分類 + 加密 + 不落地（如卡號） |
+| Hardcoded secrets | NFR/SEC requirement: secrets via secret manager, rotatable |
+| Unvalidated input | Validation/reject rules per external input point (trust boundary) |
+| Over-broad permissions | Minimal permission model, deny by default |
+| Swallowed errors | Failures must be observable and auditable, never silent |
+| Plaintext sensitive data | Data classification + encryption + don't store (e.g. card numbers) |
 
 ---
 
-## 安全需求寫法（test-first 範疇用 NFR-SEC / NFR-PRIV）
+## How to write security requirements (test-first scope uses NFR-SEC / NFR-PRIV)
 
 ```
-NFR-SEC-01: 系統 shall 對所有付款 API 強制 OAuth2 與一次性冪等鍵並拒絕重放。｜P0 ｜AC: 重送相同冪等鍵回 200 但不重複扣款；缺 token 回 401 ｜來源: R-1 / 資安 ｜依賴: -
-NFR-PRIV-01: 系統 shall 不儲存完整卡號，僅保留 tokenize 後的 token 與末四碼。｜P0 ｜AC: DB/日誌全文掃描查無 16 碼卡號 ｜來源: C-2 PCI ｜依賴: -
-NFR-PRIV-02: 系統 shall 提供使用者刪除個資請求並於 30 日內完成回執。｜P1 ｜AC: 刪除後該用戶 PII 不可由任何介面查得（法遵: GDPR 第 17 條）｜來源: 法遵 ｜依賴: -
+NFR-SEC-01: The system shall require OAuth2 and a one-time idempotency key on all payment APIs and reject replays. | P0 | AC: replaying the same idempotency key returns 200 but does not double-charge; missing token returns 401 | Source: R-1 / security | Depends: -
+NFR-PRIV-01: The system shall not store full card numbers, only the tokenized token and last four digits. | P0 | AC: full-text scan of DB/logs finds no 16-digit card number | Source: C-2 PCI | Depends: -
+NFR-PRIV-02: The system shall provide a user data-deletion request and complete it within 30 days with a receipt. | P1 | AC: after deletion the user's PII is unqueryable via any interface (GDPR Art. 17) | Source: compliance | Depends: -
 ```
 
-> 同樣是**單行 ｜ 分隔**格式；安全需求一樣強制 `來源:`（test-first 範疇尤其要追得回威脅/法遵來源）。
+> Same **single-line `|`-separated** format; security requirements likewise mandate `Source:` (test-first scope especially must trace back to a threat/compliance source).
 
-> CLAUDE.md 家規：**安全模組（Auth/權限/PII）test-first**。這些需求的 AC 要寫得能直接變成測試。
-
----
-
-## 常見陷阱
-
-- **碰敏感資料卻整段沒寫**（AirPods 同款）→ §00 已標「§08 必走」就不准跳。
-- **只說「會加密」不說怎麼加密**：靜止/傳輸、金鑰管理、誰能解都要交代。
-- **同意/刪除權當功能附屬**：GDPR/個資法是硬法遵，獨立列 NFR-PRIV。
-- **第三方當黑箱**：金流商、第三方 SDK 的資料流向與供應鏈風險要寫進來。
+> House rule: **security modules (Auth/permissions/PII) are test-first**. Write these ACs so they convert directly into tests.
 
 ---
 
-## 品質閘（過了才進 §09）
+## Common traps
 
-- ✅ 所有資料已分類（公開/內部/PII/敏感）
-- ✅ 敏感資料有：加密方式 + 保存政策 + 存取控制 + 稽核
-- ✅ authn/authz 權限模型明確、預設拒絕、最小權限
-- ✅ Sentinel 五紅旗逐項有對應預防需求
-- ✅ 適用法遵（GDPR/PCI/個資法）已列，含同意與刪除權
-- ✅ 安全需求 AC 寫得能直接變測試（test-first）
+- **Touches sensitive data but the section is empty** (the AirPods disease) → §00 already flagged "§08 required", so it can't be skipped.
+- **"It'll be encrypted" without saying how**: at-rest/in-transit, key management, who can decrypt — all spelled out.
+- **Consent/deletion as a feature afterthought**: GDPR/privacy law is hard compliance; list separately as NFR-PRIV.
+- **Third parties as black boxes**: data flows and supply-chain risk of payment providers/third-party SDKs must be written in.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §09)
+
+- ✅ All data classified (public/internal/PII/sensitive)
+- ✅ Sensitive data has: encryption method + retention policy + access control + audit
+- ✅ authn/authz permission model explicit, deny-by-default, least privilege
+- ✅ Each of the five Sentinel red flags has a matching preventive requirement
+- ✅ Applicable compliance (GDPR/PCI/privacy law) listed, including consent and deletion rights
+- ✅ Security-requirement ACs are written test-first
+
+---
+
+## Format snippet
 
 ```markdown
-## 8. 資安、隱私與法遵
+## 8. Security, Privacy & Compliance
 
-### 8.1 資料分類
-| 資料 | 分類 | 儲存/保存 | 存取控制 | 加密 |
+### 8.1 Data classification
+| Data | Class | Storage/retention | Access control | Encryption |
 
-### 8.2 威脅與防護（信任邊界 / authn / authz）
-- <威脅> → <防護需求 NFR-SEC-xx>
+### 8.2 Threats & defenses (trust boundary / authn / authz)
+- <threat> → <defense requirement NFR-SEC-xx>
 
-### 8.3 法遵與隱私
-- 適用：GDPR / PCI-DSS / 個資法 ...
-- NFR-PRIV-xx: 同意 / 保存 / 刪除權 ...
+### 8.3 Compliance & privacy
+- Applicable: GDPR / PCI-DSS / local law ...
+- NFR-PRIV-xx: consent / retention / deletion rights ...
 ```

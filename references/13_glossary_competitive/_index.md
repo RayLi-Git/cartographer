@@ -1,69 +1,69 @@
-# §13 名詞表與競品/現況分析｜共同語言 + 定位
+# §13 Glossary & Competitive / Current-State Analysis | Shared language + positioning
 
-> 對應 AirPods 的 Explanation of Terms（名詞表）與 Appendix A（競品比較表）。名詞表建立團隊共同語言、消除歧義；競品/現況分析讓定位有對照、避免重造輪子。
-
----
-
-## 引導問題
-
-1. PRD 裡有哪些**縮寫、術語、領域名詞**需要定義？（讓新人/跨部門讀得懂）
-2. 同一概念有沒有**多種叫法**？統一成一個。
-3. **競品/現況**怎麼解這個問題？他們做得好/壞在哪？
-4. 我們的**差異化定位**是什麼？（連回 §02 目標）
-5. 有沒有現成方案（library/SaaS）可用，不必自建？
+> Maps to AirPods' Explanation of Terms (glossary) and Appendix A (competitive comparison table). The glossary builds shared team language and removes ambiguity; the competitive/current-state analysis gives positioning a reference and avoids reinventing the wheel.
 
 ---
 
-## 名詞表（消歧義）
+## Guiding questions
 
-| 名詞 | 定義 |
+1. Which abbreviations, terms, domain words in the PRD need defining? (so newcomers/other teams can read it)
+2. Does one concept have **multiple names**? Unify to one.
+3. How do **competitors/the current state** solve this problem? Where are they good/bad?
+4. What's our **differentiated positioning**? (link back to §02 objectives)
+5. Is there an off-the-shelf option (library/SaaS) to use instead of building?
+
+---
+
+## Glossary (disambiguate)
+
+| Term | Definition |
 |---|---|
-| 棄單率 | 進入結帳但未完成付款的比率 = 1 − checkout_succeeded/checkout_started |
-| Tokenization | 以無意義 token 取代卡號，使系統不接觸明文卡號（PCI 範疇縮減） |
-| 冪等鍵 | 用來辨識重複請求、確保同一操作只生效一次的識別碼 |
-| P0–P3 | 需求優先級。P0 上線阻斷／P3 未來。（對應 AirPods 的 P1–P10：P0≈P10，P3≈P1–P3） |
+| Abandonment rate | Share entering checkout but not completing = 1 − checkout_succeeded/checkout_started |
+| Tokenization | Replacing the card number with a meaningless token so the system never touches plaintext (shrinks PCI scope) |
+| Idempotency key | An identifier that recognizes duplicate requests, ensuring one operation takes effect once |
+| P0–P3 | Requirement priority. P0 launch-blocking / P3 future. (Maps to AirPods' P1–P10: P0≈P10, P3≈P1–P3) |
 
 ---
 
-## 競品/現況分析（學 AirPods Appendix A 的對照表）
+## Competitive / current-state analysis (borrow AirPods' Appendix A table)
 
-| 維度 | 我們（目標） | 競品 A | 競品 B |
+| Dimension | Us (target) | Competitor A | Competitor B |
 |---|---|---|---|
-| 結帳步數 | ≤3 | 5 | 3 |
-| 行動支付 | Apple/Google Pay | 僅信用卡 | Apple Pay |
-| 訪客結帳 | ✅ | ❌ | ✅ |
-| 棄單率（公開估） | 目標 30% | ~40% | ~32% |
+| Checkout steps | ≤3 | 5 | 3 |
+| Mobile pay | Apple/Google Pay | Card only | Apple Pay |
+| Guest checkout | ✅ | ❌ | ✅ |
+| Abandonment (public est.) | target 30% | ~40% | ~32% |
 
-> 差異化定位：以「最少步數 + 行動支付 + 訪客結帳」三者齊備取勝（對應 O-2 降棄單）。
-
----
-
-## 常見陷阱
-
-- **縮寫滿天飛沒定義**：跨部門讀者卡住。`prd_lint` 之外，人工確保每個縮寫首次出現有定義。
-- **一物多名**：購物車/cart/籃子混用 → 統一。
-- **競品分析變抄襲清單**：重點是「他們的好壞 → 我們的差異化」，不是照抄功能。
-- **沒查現成方案**：自建本可外購的東西 → §10 YAGNI 也適用於「不自建」。
+> Differentiated positioning: win on "fewest steps + mobile pay + guest checkout" together (maps to O-2, lower abandonment).
 
 ---
 
-## 品質閘（過了才進 §14）
+## Common traps
 
-- ✅ 所有縮寫/術語/領域名詞有定義，無一物多名
-- ✅ P0–P3 與 AirPods P1–P10 的對應有註明
-- ✅ 競品/現況有對照，且導出差異化定位（連回 §02）
+- **Abbreviations everywhere, undefined**: cross-team readers get stuck. Beyond `prd_lint`, manually ensure each abbreviation is defined on first use.
+- **One thing, many names**: cart/basket/bag mixed → unify.
+- **Competitive analysis as a copy list**: the point is "their good/bad → our differentiation", not copying features.
+- **Not checking off-the-shelf options**: building what you could buy → §10 YAGNI also applies to "don't build".
 
 ---
 
-## 格式片段
+## Quality gate (pass before §14)
+
+- ✅ All abbreviations/terms/domain words defined, no one-thing-many-names
+- ✅ P0–P3 ↔ AirPods P1–P10 mapping noted
+- ✅ Competitive/current-state compared, yielding a differentiation (linked to §02)
+
+---
+
+## Format snippet
 
 ```markdown
-## 13. 名詞表與競品分析
+## 13. Glossary & Competitive Analysis
 
-### 名詞表
-| 名詞 | 定義 |
+### Glossary
+| Term | Definition |
 
-### 競品/現況分析
-| 維度 | 我們 | 競品A | 競品B |
-**差異化定位**：<一句話，連回某目標>
+### Competitive / current-state
+| Dimension | Us | Competitor A | Competitor B |
+**Differentiated positioning**: <one sentence, linked to some objective>
 ```

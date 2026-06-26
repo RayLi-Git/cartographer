@@ -1,16 +1,16 @@
 <!--
-  示範用「爛 PRD」— 故意塞滿新手常見毛病，給 Cartographer 審查模式健檢用。可刪。
+  Demo "bad PRD" — deliberately stuffed with the mistakes beginners commonly make, for Cartographer review mode to health-check. Safe to delete.
 -->
 
-# 集點功能
+# Points feature
 
-我們要做一個會員集點系統，讓使用者更愛用我們的 App。
+We want to build a membership points system so users love using our App more.
 
-## 功能
-- 使用者消費可以累積點數，而且點數要能兌換禮物，介面要簡單好用。
-- 系統 shall 讓使用者查詢自己的點數紀錄。
-- 點數要即時更新，速度要快、體驗要順暢。
-- 管理員可以調整使用者的點數。
+## Features
+- Users can accumulate points when they spend, and points should be redeemable for gifts, and the interface should be simple and easy to use.
+- The system shall let users look up their own points history.
+- Points should update in real time, fast, with a smooth experience.
+- Admins can adjust a user's points.
 
-## 目標
-提升使用者活躍度與滿意度，讓大家更常回來用 App。
+## Goals
+Increase user engagement and satisfaction so everyone comes back to use the App more often.

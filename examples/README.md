@@ -1,22 +1,22 @@
-# Cartographer 教學樣本（examples/）
+# Cartographer teaching samples (examples/)
 
-> 這些是用 Cartographer 跑出來的真實示範產物，**全為測試假資料**，用來示範流程與品質標準。非真實專案、非模板。
-> 空白模板與標準範例請看 `../templates/`。
+> These are real demo artifacts produced by running Cartographer. **All data is fictional test data**, used to demonstrate the flow and the quality bar. Not real projects, not templates.
+> For the blank template and the canonical filled example, see `../templates/`.
 
-| 檔案 | 示範什麼 | lint |
+| File | What it demonstrates | lint |
 |---|---|---|
-| `example-bad-prd.md` | ❌ **反面教材**：新手常見爛 PRD（無編號、形容詞、碰價值卻零資安、無範圍）。用來示範審查模式抓問題 | 0 需求／假 PASS（凸顯 lint 盲區） |
-| `example-points-after-review.md` | ✅ 由 `example-bad-prd.md` **審查→重生成**的合格版（會員集點與兌換，🔴 重級 14 節） | 11 需求／0 阻斷／PASS |
-| `example-repair-app-full.md` | ✅ 互動逐節走完的完整 PRD（社區報修 App，🔴 重級 14 節，含 §14 可追溯矩陣） | 8 需求／0 阻斷／PASS |
-| `example-quickpay-testrun.md` | ✅ 端到端壓測產物（QuickPay 一頁式行動結帳，🔴 重級） | 20 需求／0 阻斷／PASS |
+| `example-bad-prd.md` | ❌ **Anti-example**: the kind of bad PRD beginners write (no numbering, adjectives, touches value but zero security, no scope). Used to demonstrate review mode catching problems | 0 requirements / fake PASS (highlights the lint blind spot) |
+| `example-points-after-review.md` | ✅ The passing version **reviewed → regenerated** from `example-bad-prd.md` (membership points & redemption, 🔴 heavy, 14 sections) | 11 requirements / 0 blockers / PASS |
+| `example-repair-app-full.md` | ✅ A complete PRD walked through section by section interactively (a community maintenance-request app, 🔴 heavy, 14 sections, incl. §14 traceability matrix) | 8 requirements / 0 blockers / PASS |
+| `example-quickpay-testrun.md` | ✅ An end-to-end stress-test artifact (QuickPay one-page mobile checkout, 🔴 heavy) | 20 requirements / 0 blockers / PASS |
 
-## 怎麼用這些樣本
+## How to use these samples
 
-- **學「合格長什麼樣」**：讀 `example-points-after-review.md` 或 `example-repair-app-full.md`。
-- **學「爛在哪、怎麼修」**：對照 `example-bad-prd.md`（前）與 `example-points-after-review.md`（後）。
-- **驗證 lint**：
+- **Learn "what a passing PRD looks like"**: read `example-points-after-review.md` or `example-repair-app-full.md`.
+- **Learn "what's wrong and how to fix it"**: compare `example-bad-prd.md` (before) with `example-points-after-review.md` (after).
+- **Verify lint**:
   ```
-  # Windows 用 py；macOS/Linux 用 python3（直接打 python 在 Windows 可能是 Store stub 會啞掉）
+  # On Windows use py; on macOS/Linux use python3 (typing python on Windows may hit the Store stub and silently do nothing)
   py ../scripts/prd_lint.py example-points-after-review.md   # PASS
-  py ../scripts/prd_lint.py example-bad-prd.md               # 凸顯無編號=lint 失明
+  py ../scripts/prd_lint.py example-bad-prd.md               # highlights how un-numbered requirements = lint blindness
   ```

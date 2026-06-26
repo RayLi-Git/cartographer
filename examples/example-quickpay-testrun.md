@@ -1,154 +1,154 @@
 <!--
-  Cartographer 測試跑 — 自訂題目「QuickPay 一頁式行動結帳」
-  目的：壓力測試整套 Cartographer 流程（14 節 + lint），非真實專案。
-  需求單行格式：FR/NFR-<模組>-<序號>: 系統 shall <行為>。｜Px ｜AC: <可測> ｜來源: <persona/目標> ｜依賴: <FR-x 或 ->
+  Cartographer test run — custom topic "QuickPay one-page mobile checkout"
+  Purpose: stress-test the whole Cartographer flow (14 sections + lint), not a real project.
+  Requirement line format: FR/NFR-<module>-<n>: The system shall <behavior>. | Px | AC: <verifiable> | Source: <persona/objective> | Depends: <FR-x or ->
 -->
 
-# QuickPay 一頁式行動結帳 PRD
+# QuickPay One-Page Mobile Checkout PRD
 
-| 欄位 | 內容 |
+| Field | Value |
 |---|---|
-| 文件作者 / PM | （測試跑，Cartographer 代填） |
-| 版本 | v1.0 |
-| 建立日期 | 2026-06-13 |
-| 級別 | 🔴 重 |
-| 模式 | 起草 |
-| 碰觸敏感範疇 | ☑PII ☑金流 ☐健康資料 ☑權限　→ §8 必走 |
+| Author / PM | (test run, filled by Cartographer) |
+| Version | v1.0 |
+| Created | 2026-06-13 |
+| Tier | 🔴 heavy |
+| Mode | draft |
+| Sensitive scope | [x]PII [x]money [ ]health data [x]permissions → §8 required |
 
-### 變更歷史（Changelog）
-| 版本 | 日期 | 變更摘要 | 作者 |
+### Changelog
+| Version | Date | Summary | Author |
 |---|---|---|---|
-| v1.0 | 2026-06-13 | 測試跑：一次補齊 14 節並通過 lint | Cartographer |
+| v1.0 | 2026-06-13 | Test run: completed all 14 sections in one pass and passes lint | Cartographer |
 
 ---
 
-## 1. 背景與問題
+## 1. Background & Problem
 
-**問題**：DTC 品牌官網的手機結帳要跳 4 個頁面，使用者在手機上反覆切換鍵盤與滾動，付款前流失嚴重。
-**證據**：⚠️推測（測試資料）
-- 手機結帳棄單率 52%、桌機 31%（差距 21pp 集中在手機）。
-- 客服工單前三：「分期看不到月付金額」「填卡號頁面跳掉要重來」「不知道有沒有扣款成功」。
-- 競品 C 已上線一頁式 + Apple Pay，手機棄單率外部估 ~40%。
-**Why now**：旺季前要把手機轉換拉起來；現有結帳是租用第三方 hosted page，無法做一頁式與分期，擋住自有會員與訂閱 roadmap。
-**現況/既有方案**：第三方 hosted checkout、僅信用卡、4 頁式、無分期、無訪客結帳。
-**不做的代價**：維持手機 52% 棄單，估每月損失約 NT$280 萬；且自有會員/訂閱 roadmap 無法啟動。
+**Problem**: Mobile checkout on the DTC brand site spans 4 pages; users repeatedly switch keyboards and scroll on mobile, with heavy drop-off before payment.
+**Evidence**: ⚠️assumption (test data)
+- Mobile checkout abandonment 52%, desktop 31% (the 21pp gap is concentrated on mobile).
+- Top three support tickets: "can't see the monthly amount for installments", "the card-number page resets and I have to start over", "don't know whether the charge went through".
+- Competitor C has shipped one-page + Apple Pay, mobile abandonment externally estimated ~40%.
+**Why now**: We need to lift mobile conversion before peak season; the current checkout is a rented third-party hosted page that can't do one-page or installments, blocking the owned-membership and subscription roadmap.
+**Current/existing solution**: third-party hosted checkout, credit card only, 4-page flow, no installments, no guest checkout.
+**Cost of inaction**: keeping 52% mobile abandonment, estimated ~NT$2.8M lost per month; and the owned-membership/subscription roadmap can't start.
 
-## 2. 目標與成功指標
+## 2. Objectives & Success Metrics
 
-**North Star**：每月「手機端結帳成功訂單數」。
+**North Star**: monthly "successful mobile checkout orders".
 
-| ID | 目標 | 現值 → 目標值 | 期限 | 量測機制 |
-|----|------|--------------|------|----------|
-| O-1 | 手機結帳棄單率 | 52% → 40% | 2026 Q3 | 漏斗 `mobile: cart→pay→done` |
-| O-2 | 結帳完成 p95 時長 | 110s → 70s | 2026 Q3 | `checkout_started→succeeded` 時間分佈 |
-| O-3 | 分期付款採用率 | 0% → 15% | 2026 Q4 | `payment_method=installment` 佔比 |
+| ID | Goal | Current → Target | Deadline | Measurement |
+|----|------|------------------|----------|-------------|
+| O-1 | Mobile checkout abandonment | 52% → 40% | 2026 Q3 | funnel `mobile: cart→pay→done` |
+| O-2 | Checkout completion p95 time | 110s → 70s | 2026 Q3 | `checkout_started→succeeded` time distribution |
+| O-3 | Installment-payment adoption | 0% → 15% | 2026 Q4 | `payment_method=installment` share |
 
-**護欄指標**：付款客訴量較上季上升不得 >5%；重複扣款事件 = 0；退款處理時長不得惡化。
-**假設（待驗證，見 §3）**：⚠️推測 一頁式可降手機棄單約 10pp。
+**Guardrails**: payment complaint volume must not rise > 5% vs last quarter; double-charge events = 0; refund-handling time must not worsen.
+**Hypothesis (unvalidated, see §3)**: ⚠️assumption one-page can cut mobile abandonment by ~10pp.
 
-## 3. 假設、約束與風險
+## 3. Assumptions, Constraints & Risks
 
-**假設**
-- A-1: 主要手機客群裝置支援 Apple/Google Pay。｜驗證: 上線前 5% 灰度量採用率｜owner: PM
-- A-2: 分期金流商月 SLA ≥ 99.9%。｜驗證: 合約 SLA + 上線監控｜owner: 後端
-- A-3: 一頁式不會因表單過長反降轉換。｜驗證: A/B 對照組｜owner: PM
+**Assumptions**
+- A-1: The primary mobile audience's devices support Apple/Google Pay. | validation: 5% canary measuring adoption before launch | owner: PM
+- A-2: Installment provider monthly SLA ≥ 99.9%. | validation: contract SLA + post-launch monitoring | owner: Backend
+- A-3: One-page won't reduce conversion due to an over-long form. | validation: A/B control group | owner: PM
 
-**約束**
-- C-1: 卡片資料須符合 PCI-DSS，系統不得接觸明文卡號（沿用 tokenization）。
-- C-2: 沿用現有雲環境，不新增雲供應商。
-- C-3: 旺季前完成，硬死線 2026/10/15。
+**Constraints**
+- C-1: Card data must comply with PCI-DSS; the system must not touch plaintext card numbers (reuse tokenization).
+- C-2: Reuse the existing cloud environment, no new cloud vendor.
+- C-3: Complete before peak season, hard deadline 2026/10/15.
 
-**風險登記**
-| ID | 風險 | 機率 | 衝擊 | 緩解 | Owner |
-|----|------|------|------|------|-------|
-| R-1 | 金流回呼延遲導致重複扣款 | 中 | 高 | 冪等鍵 + 對帳重試 + 告警 | 後端 |
-| R-2 | 一頁式表單過長反降轉換（A-3 不成立） | 中 | 中 | A/B 測試 + 漸進揭露 | PM |
-| R-3 | 分期商審核拒絕率高、體驗斷裂 | 中 | 中 | 拒絕後即時 fallback 一次性付款 | 後端 |
+**Risk register**
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | Payment callback delay causes double charge | Med | High | Idempotency key + reconciliation retry + alert | Backend |
+| R-2 | Over-long one-page form reduces conversion (A-3 false) | Med | Med | A/B test + progressive disclosure | PM |
+| R-3 | High installment-rejection rate, broken experience | Med | Med | Immediate fallback to one-time payment on rejection | Backend |
 
-## 4. 利害關係人與 RACI
+## 4. Stakeholders & RACI
 
-| 角色 | 在乎什麼 | 最怕什麼 |
-|------|---------|---------|
-| 終端使用者 | 手機上一次填完、看得到月付金額 | 扣款失敗、個資外洩 |
-| 客服 | 付款狀態可自助查、易追查 | 大量「不知有沒有扣款」工單 |
-| 資安/法遵 | PCI 合規、可稽核 | 卡號/PII 違規 |
-| 財務/營運 | 對帳正確、分期撥款對得上 | 重複扣款、對不上帳 |
-| 分期金流商（外部） | 介接符合規範 | 超量請求、違反風控 |
+| Role | Cares about | Fears most |
+|------|-------------|------------|
+| End user | Fill once on mobile, see the monthly amount | Failed charge, leaked PII |
+| Support | Self-serviceable payment status, traceable | A flood of "did the charge go through" tickets |
+| Security/compliance | PCI compliance, auditability | Card/PII violation |
+| Finance/ops | Correct reconciliation, installment payouts match | Double charge, unbalanced books |
+| Installment provider (external) | Spec-compliant integration | Over-quota, risk-control violation |
 
-**RACI**（R執行/A當責/C諮詢/I告知）
-| 決策 | PM | 工程 | 設計 | 資安 | 法遵 |
-|------|----|----|----|----|----|
-| 功能範圍與優先級 | A | C | C | C | I |
-| 分期金流商選型 | C | R | I | C | A |
-| PII / 卡號處理方式 | C | R | I | A | C |
+**RACI** (R execute / A accountable / C consulted / I informed)
+| Decision | PM | Eng | Design | Security | Compliance |
+|----------|----|----|--------|----------|-----------|
+| Feature scope & priority | A | C | C | C | I |
+| Installment-provider selection | C | R | I | C | A |
+| PII / card handling | C | R | I | A | C |
 
-## 5. 使用者故事與旅程
+## 5. User Stories & Journey
 
 ### Persona
-**P1 手機回購客 — 小柔**：30 歲，通勤時手機下單、已綁卡。目標：一頁填完、60 秒內結完。痛點：頁面跳掉要重填。成功：手機一頁完成（連回 O-1、O-2）。
-**P2 想分期的首購者 — 阿哲**：26 歲，買高單價商品想分期，第一次買不想註冊。目標：看到月付金額、免註冊結帳。痛點：分期資訊不透明。成功：訪客 + 分期完成（連回 O-3）。
+**P1 mobile repeat buyer — Sophie**: 30, orders on mobile during her commute, card saved. Goal: fill one page, finish in 60 seconds. Pain: the page resets and she has to refill. Success: completes on one mobile page (links to O-1, O-2).
+**P2 first-time buyer who wants installments — Alex**: 26, buying a high-ticket item and wants installments, first purchase and doesn't want to register. Goal: see the monthly amount, check out without registering. Pain: installment info is opaque. Success: guest + installment complete (links to O-3).
 
-### 反向 Persona（不為誰做）
-- B2B 大量採購（需報價單/月結）→ 導向業務專線（記入 §10）。
+### Anti-persona (not for whom)
+- B2B bulk procurement (needs quotes / net terms) → route to the sales line (logged in §10).
 
-### 主旅程
-購物車 → 一頁結帳（地址 + 付款方式 + 分期選擇同頁）→ 付款中 → ✅成功頁
-　岔路：❌付款失敗（可重試/換方式）／⏳逾時（訂單 pending + 通知）／🔌斷線（保留進度、可續）／🚫分期被拒（fallback 一次付清）
+### Main journey
+Cart → one-page checkout (address + payment method + installment choice on the same page) → paying → ✅ success page
+ branches: ❌ payment failed (retry / switch method) / ⏳ timeout (order pending + notify) / 🔌 disconnect (keep progress, resume) / 🚫 installment rejected (fallback to pay in full)
 
-## 6. 功能需求
+## 6. Functional Requirements
 
-### 6.1 一頁結帳
-FR-CHK-01: 系統 shall 在單一頁面同時呈現地址、付款方式與分期選項，不換頁完成輸入。｜P0 ｜AC: 從購物車進入到可送出全程 0 次整頁導航 ｜來源: P1 小柔 / O-1 ｜依賴: -
-FR-CHK-02: 系統 shall 在已登入時自動帶入預設地址與已綁卡。｜P1 ｜AC: 已登入且有預設值時地址與卡片預填且可編輯 ｜來源: P1 小柔 / O-2 ｜依賴: FR-CHK-01
+### 6.1 One-page checkout
+FR-CHK-01: The system shall present address, payment method, and installment options together on a single page, completing input with no page change. | P0 | AC: from cart entry to submittable, 0 full-page navigations throughout | Source: P1 Sophie / O-1 | Depends: -
+FR-CHK-02: The system shall auto-fill the default address and saved card when logged in. | P1 | AC: when logged in with defaults, address and card are pre-filled and editable | Source: P1 Sophie / O-2 | Depends: FR-CHK-01
 
-### 6.2 付款
-FR-PAY-01: 系統 shall 在使用者送出結帳時建立付款意圖並回傳付款識別。｜P0 ｜AC: 回 200 含 paymentId 且訂單狀態=pending_payment ｜來源: 場景#1 / O-1 ｜依賴: -
-FR-PAY-02: 系統 shall 支援信用卡、行動支付（Apple/Google Pay）與分期三種付款方式。｜P0 ｜AC: 三種方式皆可於沙箱完成一筆授權成功 ｜來源: P1/P2 / O-3 ｜依賴: FR-PAY-01
-FR-PAY-03: 系統 shall 在金流回呼逾時 30 秒後將訂單標記為 pending 並觸發對帳重試。｜P0 ｜AC: 逾時第 31 秒訂單狀態=pending；5 分鐘內最多重試 3 次；每次重試寫稽核日誌 ｜來源: 場景#逾時 / O-1 ｜依賴: FR-PAY-01
-FR-PAY-04: 系統 shall 提供免註冊的訪客結帳。｜P0 ｜AC: 未登入可僅以 email + 地址完成結帳並收到訂單確認信 ｜來源: P2 阿哲 / O-1 ｜依賴: FR-PAY-01
+### 6.2 Payment
+FR-PAY-01: The system shall create a payment intent and return a payment id when the user submits checkout. | P0 | AC: returns 200 with paymentId and order status = pending_payment | Source: Scenario #1 / O-1 | Depends: -
+FR-PAY-02: The system shall support three payment methods: credit card, mobile pay (Apple/Google Pay), and installments. | P0 | AC: all three methods complete one sandbox authorization | Source: P1/P2 / O-3 | Depends: FR-PAY-01
+FR-PAY-03: The system shall mark the order pending and trigger a reconciliation retry after a 30s payment-callback timeout. | P0 | AC: at second 31 order status = pending; at most 3 retries within 5 minutes; each retry writes an audit log | Source: Scenario timeout / O-1 | Depends: FR-PAY-01
+FR-PAY-04: The system shall provide register-free guest checkout. | P0 | AC: a non-logged-in user can complete checkout with email + address and receive an order confirmation email | Source: P2 Alex / O-1 | Depends: FR-PAY-01
 
-### 6.3 分期
-FR-INST-01: 系統 shall 在選擇分期時即時顯示每期金額、期數與總費用。｜P0 ｜AC: 選 3/6/12 期任一，500ms 內顯示對應月付金額與總額 ｜來源: P2 阿哲「分期不透明」/ O-3 ｜依賴: FR-PAY-02
-FR-INST-02: 系統 shall 在分期申請被拒時提供一次性付清的 fallback 而不清空購物車。｜P0 ｜AC: 分期被拒後顯示改用一次付清選項，購物車與表單內容保留 ｜來源: R-3 / O-3 ｜依賴: FR-INST-01
+### 6.3 Installments
+FR-INST-01: The system shall show the per-term amount, number of terms, and total cost in real time when installments are selected. | P0 | AC: selecting any of 3/6/12 terms shows the corresponding monthly amount and total within 500ms | Source: P2 Alex "installments opaque" / O-3 | Depends: FR-PAY-02
+FR-INST-02: The system shall offer a pay-in-full fallback when an installment application is rejected, without clearing the cart. | P0 | AC: after rejection, show a pay-in-full option and preserve cart and form content | Source: R-3 / O-3 | Depends: FR-INST-01
 
-### 6.4 負向 / 邊界 / 狀態
-FR-PAY-05: 系統 shall 在付款失敗時顯示可理解原因並提供重試或更換付款方式。｜P0 ｜AC: 卡片被拒時顯示「發卡行拒絕，請換卡或聯絡發卡行」並保留購物車 ｜來源: P1 小柔 / O-1 ｜依賴: FR-PAY-02
-FR-PAY-06: 系統 shall 對重複提交的結帳請求以冪等方式處理，不重複建立訂單或扣款。｜P0 ｜AC: 相同冪等鍵重送回首次結果，訂單與扣款各僅一次 ｜來源: R-1 / O-1 ｜依賴: FR-PAY-01
-FR-CHK-03: 系統 shall 在連線中斷後保留結帳進度，使用者返回時可續行。｜P1 ｜AC: 斷線重連後表單內容與購物車不遺失 ｜來源: 場景#斷線 / O-1 ｜依賴: FR-CHK-01
-FR-CHK-04: 系統 shall 在購物車為空或金額為 0 時阻擋進入結帳。｜P2 ｜AC: 空車點結帳顯示提示且不建立付款意圖 ｜來源: 邊界 / O-1 ｜依賴: -
+### 6.4 Negative / edge / state
+FR-PAY-05: The system shall, on payment failure, show a comprehensible reason and offer retry or switch method. | P0 | AC: on card decline, show "issuer declined, try another card or contact your issuer" and keep the cart | Source: P1 Sophie / O-1 | Depends: FR-PAY-02
+FR-PAY-06: The system shall handle duplicate checkout requests idempotently, creating no duplicate order or charge. | P0 | AC: the same idempotency key returns the first result; order and charge happen once each | Source: R-1 / O-1 | Depends: FR-PAY-01
+FR-CHK-03: The system shall preserve checkout progress after a disconnect so the user can resume on return. | P1 | AC: after reconnect, form content and cart are not lost | Source: Scenario disconnect / O-1 | Depends: FR-CHK-01
+FR-CHK-04: The system shall block entering checkout when the cart is empty or the amount is 0. | P2 | AC: clicking checkout on an empty cart shows a hint and creates no payment intent | Source: edge / O-1 | Depends: -
 
-## 7. 非功能需求
+## 7. Non-Functional Requirements
 
-NFR-PERF-01: 系統 shall 使結帳送出到結果頁的 p95 延遲低於 1.5 秒。｜P0 ｜AC: 尖峰 400 QPS 下 p95 < 1.5s、p99 < 3s ｜來源: P1 小柔 / O-2 ｜依賴: -
-NFR-SLA-01: 系統 shall 維持付款服務月可用性不低於 99.95%，金流商當機時降級為稍後通知。｜P0 ｜AC: 月停機 < 22 分鐘；金流商不可用時訂單轉 pending 並通知 ｜來源: A-2 / 護欄 ｜依賴: -
-NFR-OBS-01: 系統 shall 對每筆付款發出 checkout_* 事件，並於失敗率超標時告警。｜P1 ｜AC: 失敗率 >2% 連續 5 分鐘觸發 PagerDuty ｜來源: O-1 / R-1 ｜依賴: -
-NFR-A11Y-01: 系統 shall 使一頁結帳可純鍵盤操作並符合 WCAG 2.1 AA。｜P1 ｜AC: 鍵盤可完成結帳；對比度與標籤通過 axe 掃描 ｜來源: 無障礙法遵 ｜依賴: -
-NFR-I18N-01: 系統 shall 支援 zh-TW 與 en，並依 locale 顯示幣別與千分位。｜P2 ｜AC: 切換語系後金額格式與文案正確 ｜來源: 市場拓展 ｜依賴: -
+NFR-PERF-01: The system shall keep p95 latency from checkout submit to result page below 1.5 seconds. | P0 | AC: at peak 400 QPS, p95 < 1.5s and p99 < 3s | Source: P1 Sophie / O-2 | Depends: -
+NFR-SLA-01: The system shall maintain payment-service monthly availability of at least 99.95%, degrading to notify-later on provider outage. | P0 | AC: monthly downtime < 22 minutes; on provider outage, order moves to pending and notifies | Source: A-2 / guardrail | Depends: -
+NFR-OBS-01: The system shall emit checkout_* events per payment and alert when the failure rate exceeds threshold. | P1 | AC: failure rate > 2% for 5 consecutive minutes triggers PagerDuty | Source: O-1 / R-1 | Depends: -
+NFR-A11Y-01: The system shall make the one-page checkout keyboard-operable and WCAG 2.1 AA compliant. | P1 | AC: checkout completable by keyboard; contrast and labels pass an axe scan | Source: accessibility compliance | Depends: -
+NFR-I18N-01: The system shall support zh-TW and en, showing currency and thousands separators per locale. | P2 | AC: switching locale renders correct money format and copy | Source: market expansion | Depends: -
 
-## 8. 資安、隱私與法遵
+## 8. Security, Privacy & Compliance
 
-### 8.1 資料分類
-| 資料 | 分類 | 儲存/保存 | 存取控制 | 加密 |
-|------|------|----------|---------|------|
-| 卡號 | 敏感(PCI) | 不落地，交 tokenization | 無人可讀明文 | 全程 TLS + 不存 |
-| 姓名/地址/email | PII | 加密欄位，保存依政策 2 年 | 角色授權 + 稽核 | 靜止加密 |
-| 分期申請資料 | 敏感(PII) | 加密，依金流商規範保存 | 角色授權 + 稽核 | 靜止加密 |
-| 訂單金額/狀態 | 內部 | 一般 | 角色授權 | 傳輸加密 |
+### 8.1 Data classification
+| Data | Class | Storage/retention | Access control | Encryption |
+|------|-------|-------------------|----------------|------------|
+| Card number | Sensitive (PCI) | Not stored, handed to tokenization | No one reads plaintext | TLS throughout + not stored |
+| Name/address/email | PII | Encrypted columns, retained 2 years per policy | Role-authorized + audited | Encrypted at rest |
+| Installment application data | Sensitive (PII) | Encrypted, retained per provider spec | Role-authorized + audited | Encrypted at rest |
+| Order amount/status | Internal | Normal | Role-authorized | Encrypted in transit |
 
-### 8.2 威脅與防護
-- 重放/重複扣款（信任邊界）→ FR-PAY-06 冪等 + NFR-SEC-01 授權
-- 未授權存取付款 API → NFR-SEC-01
-- 卡號外洩 → NFR-PRIV-01 不落地
+### 8.2 Threats & defenses
+- Replay/double charge (trust boundary) → FR-PAY-06 idempotency + NFR-SEC-01 authz
+- Unauthorized access to payment API → NFR-SEC-01
+- Card-number leak → NFR-PRIV-01 not stored
 
-NFR-SEC-01: 系統 shall 對所有付款 API 強制 OAuth2 授權與一次性冪等鍵並拒絕重放。｜P0 ｜AC: 缺 token 回 401；重送相同冪等鍵回 200 但不重複扣款 ｜來源: R-1 / 資安 ｜依賴: -
+NFR-SEC-01: The system shall require OAuth2 authorization and a one-time idempotency key on all payment APIs and reject replays. | P0 | AC: missing token returns 401; replaying the same idempotency key returns 200 but does not double-charge | Source: R-1 / security | Depends: -
 
-### 8.3 法遵與隱私
-NFR-PRIV-01: 系統 shall 不儲存完整卡號，僅保留 token 與末四碼。｜P0 ｜AC: DB 與日誌全文掃描查無 16 碼卡號 ｜來源: C-1 PCI ｜依賴: -
-NFR-PRIV-02: 系統 shall 提供使用者個資刪除請求並於 30 日內完成。｜P1 ｜AC: 刪除後該用戶 PII 無法由任何介面查得（GDPR 第 17 條）｜來源: 法遵 ｜依賴: -
+### 8.3 Compliance & privacy
+NFR-PRIV-01: The system shall not store full card numbers, only the token and last four digits. | P0 | AC: full-text scan of DB and logs finds no 16-digit card number | Source: C-1 PCI | Depends: -
+NFR-PRIV-02: The system shall provide a user data-deletion request completed within 30 days. | P1 | AC: after deletion the user's PII is unqueryable via any interface (GDPR Art. 17) | Source: compliance | Depends: -
 
-## 9. 資料與整合
+## 9. Data & Integration
 
-### 9.1 資料模型
+### 9.1 Data model
 ```
 Order:   { id, userId|null, items[], amount, currency, status, createdAt }
   status: cart → pending_payment → paid → fulfilled | failed | refunded
@@ -156,99 +156,99 @@ Payment: { id, orderId, provider, method, token, last4, status, idempotencyKey }
   method: card | wallet | installment
 Installment: { id, paymentId, terms, perTermAmount, totalCost, approvalStatus }
 ```
-（每個 status 轉移對應 §6 的功能/負向需求）
+(Each status transition maps to a §6 functional/negative requirement.)
 
-### 9.2 介面契約
+### 9.2 Interface contracts
 ```
 POST /api/checkout
   req:  { orderId, paymentMethodId, installmentTerms|null, idempotencyKey }
-  resp: 200 {paymentId, status} | 402 付款失敗 | 409 重複 | 401 未授權 | 422 分期被拒
-  冪等：相同 idempotencyKey 回首次結果（FR-PAY-06）
-事件：checkout_started / checkout_succeeded / checkout_failed / installment_selected
+  resp: 200 {paymentId, status} | 402 payment failed | 409 duplicate | 401 unauthorized | 422 installment rejected
+  idempotency: same idempotencyKey returns the first result (FR-PAY-06)
+events: checkout_started / checkout_succeeded / checkout_failed / installment_selected
 ```
 
-### 9.3 平台支援矩陣
-| 平台 | 最低版本 | 備註 |
-|------|---------|------|
+### 9.3 Platform support matrix
+| Platform | Min version | Notes |
+|----------|-------------|-------|
 | iOS Safari | 15+ | Apple Pay |
-| Android Chrome | 最近 2 版 | Google Pay |
-| Desktop | Chrome/Edge/Firefox 最近 2 版 | — |
+| Android Chrome | last 2 versions | Google Pay |
+| Desktop | Chrome/Edge/Firefox last 2 | — |
 
-### 9.4 第三方依賴
-| 依賴 | 用途 | 限制 | 失效時行為 |
-|------|------|------|-----------|
-| 卡片金流商 | 信用卡/行動支付授權 | 50 req/s；PCI | 降級為稍後通知（R-1、NFR-SLA-01） |
-| 分期金流商 | 分期審核與撥款 | 風控規則；配額 | fallback 一次付清（FR-INST-02、R-3） |
-| 簡訊商 | 訂單通知 | 配額 | 改 email 備援 |
+### 9.4 Third-party dependencies
+| Dependency | Use | Limit | Behavior on failure |
+|------------|-----|-------|---------------------|
+| Card payment provider | Card/mobile-pay authorization | 50 req/s; PCI | Degrade to notify-later (R-1, NFR-SLA-01) |
+| Installment provider | Installment review and disbursement | Risk rules; quota | Fallback to pay in full (FR-INST-02, R-3) |
+| SMS provider | Order notifications | Quota | Fall back to email |
 
-## 10. 範圍邊界
+## 10. Scope Boundary
 
-**本期做**：一頁式手機結帳、訪客結帳、信用卡 + Apple/Google Pay + 分期、zh-TW/en。
-**本期不做（out of scope）**：B2B 報價單/月結（→ 業務專線）、加密貨幣、超商代碼、訂閱制扣款、其餘語系。原因：不符 O-1/O-2/O-3 本期目標，且增加工期與風控風險。
-**之後可能（next，非承諾）**：訂閱制、超商代碼、日文。
+**In scope**: one-page mobile checkout, guest checkout, credit card + Apple/Google Pay + installments, zh-TW/en.
+**Out of scope (this cycle)**: B2B quotes/net terms (→ sales line), cryptocurrency, convenience-store codes, subscription billing, other locales. Reason: off this cycle's O-1/O-2/O-3 objectives, and adds schedule and risk-control risk.
+**Next (maybe, not a promise)**: subscriptions, convenience-store codes, Japanese.
 
-## 11. 開放問題
+## 11. Open Questions
 
-| ID | 問題 | 影響 | Owner | 需結論時點 |
-|----|------|------|-------|-----------|
-| Q-1 | 訪客結帳是否需 email 驗證（轉換 vs 詐欺） | FR-PAY-04 | PM + 風控 | 設計凍結前 |
-| Q-2 | 分期被拒後是否保留申請紀錄供再試 | FR-INST-02 | 後端 + 法遵 | M2 前 |
-| Q-3 | 退款是否走原付款管道（含分期） | 退款流程 | 後端 | M2 前 |
+| ID | Question | Impact | Owner | Ruling by |
+|----|----------|--------|-------|-----------|
+| Q-1 | Should guest checkout require email verification (conversion vs fraud)? | FR-PAY-04 | PM + risk | before design freeze |
+| Q-2 | Should installment applications be retained for retry after rejection? | FR-INST-02 | Backend + compliance | before M2 |
+| Q-3 | Should refunds go through the original channel (including installments)? | refund flow | Backend | before M2 |
 
-## 12. 里程碑與發布切片
+## 12. Milestones & Release Slices
 
-**依賴**：NFR-SEC-01 →（前置所有 PAY）；FR-CHK-01 → FR-PAY-01 → FR-PAY-02 → FR-INST-01；FR-PAY-01 → FR-PAY-06
+**Dependencies**: NFR-SEC-01 → (prerequisite for all PAY); FR-CHK-01 → FR-PAY-01 → FR-PAY-02 → FR-INST-01; FR-PAY-01 → FR-PAY-06
 
-| 里程碑 | 切片內容 | 含需求 | DoD | 硬時點 |
-|--------|---------|--------|-----|--------|
-| M1 | 一頁式訪客信用卡結帳端到端 | FR-CHK-01,03,04；FR-PAY-01,03,04,05,06；NFR-SEC-01；NFR-PERF-01 | 沙箱真實付款成功 + 壓測 400QPS 達標 | — |
-| M2 | 綁卡 + 行動支付 + 分期 + 無障礙 | FR-CHK-02；FR-PAY-02；FR-INST-01,02；NFR-A11Y-01；NFR-I18N-01 | 三種付款通過、分期 fallback 驗證、A11Y 掃描過 | 2026/10/15 旺季前 |
+| Milestone | Slice content | Requirements | DoD | Hard date |
+|-----------|---------------|--------------|-----|-----------|
+| M1 | One-page guest credit-card checkout end-to-end | FR-CHK-01,03,04; FR-PAY-01,03,04,05,06; NFR-SEC-01; NFR-PERF-01 | real sandbox payment succeeds + load test 400 QPS passes | — |
+| M2 | Saved card + mobile pay + installments + accessibility | FR-CHK-02; FR-PAY-02; FR-INST-01,02; NFR-A11Y-01; NFR-I18N-01 | three payment methods pass, installment fallback verified, A11Y scan passes | 2026/10/15 before peak |
 
-## 13. 名詞表與競品分析
+## 13. Glossary & Competitive Analysis
 
-### 名詞表
-| 名詞 | 定義 |
-|------|------|
-| 棄單率 | 進入結帳但未完成付款比率 = 1 − checkout_succeeded/checkout_started |
-| 一頁式結帳 | 地址/付款/分期於單一頁面完成，無整頁導航 |
-| Tokenization | 以無意義 token 取代卡號，使系統不接觸明文（縮減 PCI 範疇） |
-| 冪等鍵 | 辨識重複請求、確保同一操作只生效一次的識別碼 |
-| fallback | 主路徑失敗時自動提供的替代路徑（此處指分期被拒轉一次付清） |
-| P0–P3 | 優先級，P0 上線阻斷／P3 未來 |
+### Glossary
+| Term | Definition |
+|------|------------|
+| Abandonment rate | share entering checkout but not completing payment = 1 − checkout_succeeded/checkout_started |
+| One-page checkout | address/payment/installments completed on a single page, no full-page navigation |
+| Tokenization | replacing the card number with a meaningless token so the system never touches plaintext (shrinks PCI scope) |
+| Idempotency key | an identifier recognizing duplicate requests, ensuring one operation takes effect once |
+| Fallback | the alternative path offered automatically when the main path fails (here, installment rejection → pay in full) |
+| P0–P3 | Priority. P0 launch-blocking / P3 future. |
 
-### 競品/現況分析
-| 維度 | 我們（目標） | 競品A | 競品C |
-|------|------------|-------|-------|
-| 結帳頁數 | 1 | 4 | 1 |
-| 行動支付 | Apple/Google Pay | 僅信用卡 | Apple Pay |
-| 分期透明顯示 | ✅ 即時月付金額 | ❌ | 部分 |
-| 訪客結帳 | ✅ | ❌ | ✅ |
-| 手機棄單率（估） | 目標 40% | ~55% | ~40% |
-**差異化定位**：一頁式 + 分期月付透明 + 訪客結帳三者齊備（對應 O-1/O-3）。
+### Competitive / current-state
+| Dimension | Us (target) | Competitor A | Competitor C |
+|-----------|-------------|--------------|--------------|
+| Checkout pages | 1 | 4 | 1 |
+| Mobile pay | Apple/Google Pay | Card only | Apple Pay |
+| Transparent installment display | ✅ real-time monthly amount | ❌ | partial |
+| Guest checkout | ✅ | ❌ | ✅ |
+| Mobile abandonment (est.) | target 40% | ~55% | ~40% |
+**Differentiated positioning**: one-page + transparent installment monthly amount + guest checkout, all three together (maps to O-1/O-3).
 
-## 14. 交棒 compass
+## 14. Handoff to Compass
 
-### 可追溯矩陣
-| 需求 | 來源 | 目標 | AC摘要 | 優先級 | 里程碑 |
-|------|------|------|--------|--------|--------|
-| FR-CHK-01 | P1 小柔 | O-1 | 0 次整頁導航完成輸入 | P0 | M1 |
-| FR-PAY-01 | 場景#1 | O-1 | 回200含paymentId | P0 | M1 |
-| FR-PAY-04 | P2 阿哲 | O-1 | 訪客可完成結帳 | P0 | M1 |
-| FR-PAY-06 | R-1 | O-1 | 冪等不重複扣款 | P0 | M1 |
-| NFR-SEC-01 | 資安 | 護欄 | 缺token回401 | P0 | M1 |
-| NFR-PRIV-01 | C-1 PCI | 護欄 | 查無明文卡號 | P0 | M1 |
-| FR-INST-01 | P2 阿哲 | O-3 | 即時顯示月付金額 | P0 | M2 |
-| FR-PAY-02 | P1/P2 | O-3 | 三種付款成功 | P0 | M2 |
+### Traceability matrix
+| Requirement | Source | Objective | AC summary | Priority | Milestone |
+|-------------|--------|-----------|------------|----------|-----------|
+| FR-CHK-01 | P1 Sophie | O-1 | 0 full-page navigations to complete input | P0 | M1 |
+| FR-PAY-01 | Scenario #1 | O-1 | returns 200 with paymentId | P0 | M1 |
+| FR-PAY-04 | P2 Alex | O-1 | guest can complete checkout | P0 | M1 |
+| FR-PAY-06 | R-1 | O-1 | idempotent, no double charge | P0 | M1 |
+| NFR-SEC-01 | Security | Guardrail | missing token returns 401 | P0 | M1 |
+| NFR-PRIV-01 | C-1 PCI | Guardrail | no plaintext card found | P0 | M1 |
+| FR-INST-01 | P2 Alex | O-3 | real-time monthly amount shown | P0 | M2 |
+| FR-PAY-02 | P1/P2 | O-3 | three payment methods succeed | P0 | M2 |
 
-**孤兒檢查**：所有需求皆有來源；O-1/O-2/O-3 皆有需求服務。✅
+**Orphan check**: every requirement has a source; O-1/O-2/O-3 each have a serving requirement. ✅
 
 ### Compass Checklist
-- [ ] FR-CHK-01 一頁式輸入 ｜P0｜AC: 0 次整頁導航｜驗收方式: 端到端測試
-- [ ] FR-PAY-01 建立付款意圖 ｜P0｜AC: 回200含paymentId｜驗收方式: 整合測試
-- [ ] FR-PAY-03 逾時轉 pending ｜P0｜AC: 第31秒=pending,5分內≤3重試｜驗收方式: 整合測試
-- [ ] FR-PAY-04 訪客結帳 ｜P0｜AC: email+地址可完成｜驗收方式: 整合測試
-- [ ] FR-PAY-06 冪等處理 ｜P0｜AC: 相同冪等鍵不重複扣款｜驗收方式: 整合測試
-- [ ] FR-INST-01 分期月付透明 ｜P0｜AC: 500ms 內顯示月付金額｜驗收方式: 端到端測試
-- [ ] FR-INST-02 分期 fallback ｜P0｜AC: 被拒後保留購物車轉一次付清｜驗收方式: 整合測試
-- [ ] NFR-SEC-01 付款 API 授權 ｜P0｜AC: 缺token回401｜驗收方式: 安全測試(test-first)
-- [ ] NFR-PRIV-01 不存明文卡號 ｜P0｜AC: 全文掃描無16碼｜驗收方式: 掃描腳本
+- [ ] FR-CHK-01 one-page input | P0 | AC: 0 full-page navigations | verify: end-to-end test
+- [ ] FR-PAY-01 create payment intent | P0 | AC: returns 200 with paymentId | verify: integration test
+- [ ] FR-PAY-03 timeout → pending | P0 | AC: s31 = pending, ≤3 retries in 5min | verify: integration test
+- [ ] FR-PAY-04 guest checkout | P0 | AC: email+address completes | verify: integration test
+- [ ] FR-PAY-06 idempotent handling | P0 | AC: same idempotency key no double charge | verify: integration test
+- [ ] FR-INST-01 transparent installment monthly amount | P0 | AC: monthly amount shown within 500ms | verify: end-to-end test
+- [ ] FR-INST-02 installment fallback | P0 | AC: after rejection keep cart, switch to pay in full | verify: integration test
+- [ ] NFR-SEC-01 payment API authz | P0 | AC: missing token returns 401 | verify: security test (test-first)
+- [ ] NFR-PRIV-01 no plaintext card | P0 | AC: full-text scan finds no 16-digit | verify: scan script

@@ -1,71 +1,71 @@
-# §04 利害關係人與 RACI｜誰在乎、誰拍板
+# §04 Stakeholders & RACI | Who cares, who decides
 
-> 對應 AirPods 的 Stakeholders（它列了 target group、客服、行銷、高層、零售商、法規）。軟體要再加一層 AirPods 沒有的：**誰對每個決策負責、誰簽核**（RACI），否則 PRD 衝突時沒人能拍板。
-
----
-
-## 引導問題
-
-1. 這個產品/功能**影響到誰**？（使用者、業務、客服、法遵、營運、合作方…）
-2. 每一類**在乎什麼**？（他們的成功長什麼樣、最怕什麼）
-3. **誰能拍板**範圍與優先級？（Accountable，只能一個）
-4. **誰要被諮詢**才能定案？（法遵、資安、設計、SRE）
-5. 有沒有**外部依賴方**（金流商、第三方 API、上游團隊）？
+> Maps to AirPods' Stakeholders (it listed target group, customer service, marketing, senior management, retailers, regulators). Software needs one more layer AirPods lacked: **who's responsible/accountable for each decision** (RACI), or nobody can adjudicate a PRD conflict.
 
 ---
 
-## 利害關係人盤點
+## Guiding questions
 
-| 角色 | 在乎什麼 | 最怕什麼 |
+1. Who does this product/feature **affect**? (users, business, support, compliance, ops, partners…)
+2. What does each group **care about**? (what success looks like for them, what they fear most)
+3. Who can **decide** scope and priority? (Accountable — exactly one)
+4. Who must be **consulted** before it's settled? (compliance, security, design, SRE)
+5. Any **external dependencies** (payment provider, third-party API, upstream team)?
+
+---
+
+## Stakeholder inventory
+
+| Role | Cares about | Fears most |
 |---|---|---|
-| 終端使用者 | 快速、安全完成結帳 | 扣款失敗、個資外洩 |
-| 客服 | 問題可自助、易追查 | 大量「付款失敗」工單 |
-| 法遵/資安 | 合規、可稽核 | PII/卡號處理違規 |
-| 營運/財務 | 對帳正確、金流可控 | 重複扣款、對不上帳 |
-| 金流商（外部） | 介接符合規範 | 超量請求、違反 PCI |
+| End user | Fast, safe checkout | Failed charge, leaked PII |
+| Customer support | Self-serviceable, traceable issues | A flood of "payment failed" tickets |
+| Security/compliance | Compliance, auditability | Mishandled PII/card numbers |
+| Ops/finance | Correct reconciliation | Double charges, books that don't balance |
+| Payment provider (external) | Spec-compliant integration | Over-quota requests, PCI violations |
 
 ---
 
-## RACI（每個關鍵決策一列）
+## RACI (one row per key decision)
 
-> R=執行 Responsible｜A=當責 Accountable（只能一人）｜C=諮詢 Consulted｜I=告知 Informed
+> R = Responsible | A = Accountable (exactly one) | C = Consulted | I = Informed
 
-| 決策 | PM | 工程 | 設計 | 資安 | 法遵 |
-|------|----|----|----|----|----|
-| 功能範圍與優先級 | A | C | C | C | I |
-| 金流商選型 | C | R | I | C | A |
-| PII 處理方式 | C | R | I | A | C |
-
----
-
-## 常見陷阱
-
-- **Accountable 有兩個人**：當責只能一人，否則衝突時無人拍板。
-- **漏掉「沉默」利害關係人**：客服、法遵、SRE 常沒被問，上線才爆。AirPods 有列零售商/法規，值得學。
-- **只列角色不列在乎什麼**：列了一排 title 沒有用，要寫出每類的成功與恐懼，需求才有來源。
-- **外部依賴方沒列**：金流商/第三方 API 的限制會反過來約束 §06、§09。
+| Decision | PM | Eng | Design | Security | Compliance |
+|----------|----|----|--------|----------|-----------|
+| Feature scope & priority | A | C | C | C | I |
+| Payment provider selection | C | R | I | C | A |
+| PII handling | C | R | I | A | C |
 
 ---
 
-## 品質閘（過了才進 §05）
+## Common traps
 
-- ✅ 利害關係人列齊，含「沉默」角色（客服/法遵/資安/SRE）與外部依賴方
-- ✅ 每類都寫了「在乎什麼 / 最怕什麼」
-- ✅ 關鍵決策有 RACI，且每列 **A 只有一人**
+- **Two Accountables**: there can be only one, or no one adjudicates a conflict.
+- **Missing "silent" stakeholders**: support, compliance, SRE often aren't asked and blow up at launch. AirPods listing retailers/regulators is worth emulating.
+- **Listing roles without what they care about**: a row of titles is useless; write each group's success and fear so requirements have a source.
+- **External dependencies omitted**: payment-provider/third-party limits constrain §06 and §09 in reverse.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §05)
+
+- ✅ Stakeholders complete, including "silent" roles (support/compliance/security/SRE) and external dependencies
+- ✅ Each has "cares about / fears most"
+- ✅ Key decisions have RACI, and each row has **exactly one A**
+
+---
+
+## Format snippet
 
 ```markdown
-## 4. 利害關係人與 RACI
+## 4. Stakeholders & RACI
 
-| 角色 | 在乎什麼 | 最怕什麼 |
-|------|---------|---------|
+| Role | Cares about | Fears most |
+|------|-------------|------------|
 | ... | ... | ... |
 
-**RACI**（R 執行 / A 當責 / C 諮詢 / I 告知）
-| 決策 | PM | 工程 | 設計 | 資安 | 法遵 |
-|------|----|----|----|----|----|
+**RACI** (R Responsible / A Accountable / C Consulted / I Informed)
+| Decision | PM | Eng | Design | Security | Compliance |
+|----------|----|----|--------|----------|-----------|
 | ... | A | R | C | C | I |
 ```

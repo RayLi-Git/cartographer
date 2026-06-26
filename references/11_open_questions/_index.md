@@ -1,62 +1,62 @@
-# §11 開放問題｜誠實列未決，別假裝想清楚
+# §11 Open Questions | Honestly list the undecided, don't pretend
 
-> 對應 AirPods 的 Open Questions（它誠實列了電池、Android 連線等 5 條）。這是成熟 PRD 的標誌。但要跟 §03 風險**分家**：風險是「可能出事＋怎麼擋」，開放問題是「還沒答案、需要誰去查/裁決」。
-
----
-
-## 引導問題
-
-1. 哪些事**現在還沒答案**，但不影響開工其他部分？
-2. 每個未決問題**誰負責找答案**、**何時要有結論**？
-3. 哪些是**需要使用者/上級裁決**的（不是工程能自己決定的）？
-4. §06 中標了 `⏭ 跳過` 的需求，是不是該收進這裡？
+> Maps to AirPods' Open Questions (it honestly listed 5 — battery, Android connectivity, etc.). A mark of a mature PRD. But keep it **separate from §03 risks**: a risk is "what could go wrong + how to block it"; an open question is "no answer yet, needs someone to investigate/decide".
 
 ---
 
-## 開放問題 vs 風險 vs 缺漏（三者分流）
+## Guiding questions
 
-| 類型 | 特徵 | 去哪 |
+1. What has **no answer yet** but doesn't block starting other parts?
+2. For each, **who finds the answer** and **by when**?
+3. Which need a **user/management ruling** (not something engineering decides alone)?
+4. Requirements marked `⏭ skip` in §06 — should they be collected here?
+
+---
+
+## Open question vs risk vs gap (route the three)
+
+| Type | Trait | Where |
 |---|---|---|
-| 開放問題 | 還沒答案，待查/待裁決 | **§11 這裡** |
-| 風險 | 可能出事 + 機率/衝擊/緩解 | §03 |
-| PRD 缺漏但實作更好 | 規格沒寫，但做了更好 | 保留+標註，等裁決（compass §5） |
+| Open question | No answer yet, to investigate/decide | **§11 here** |
+| Risk | Could go wrong + probability/impact/mitigation | §03 |
+| PRD gap but implementation is better | Spec didn't say, but doing it is better | Keep + annotate, await ruling (Compass §5) |
 
 ---
 
-## 寫法（每條要有 owner 與時點）
+## How to write (each needs an owner and a time)
 
 ```
-Q-1: 訪客結帳是否要求 email 驗證？影響轉換 vs 詐欺風險。
-     owner: PM + 風控 ｜ 需在 設計凍結前 裁決
-Q-2: 退款是否走原付款管道？依金流商能力。
-     owner: 後端 ｜ 需在 §12 M2 前確認
+Q-1: Should guest checkout require email verification? Conversion vs fraud risk.
+     owner: PM + risk | needs ruling before design freeze
+Q-2: Should refunds go through the original payment channel? Depends on provider capability.
+     owner: Backend | confirm before §12 M2
 ```
 
 ---
 
-## 常見陷阱
+## Common traps
 
-- **把開放問題藏起來**：假裝都想清楚 → 實作期才爆。誠實列出反而專業。
-- **問題沒有 owner/時點**：變成永遠的待辦。每條指派人 + 截止。
-- **跟風險混寫**（AirPods 同款）：能寫出機率/衝擊/緩解的，移 §03。
-- **拿開放問題當拖延藉口**：能查清的現在查，別什麼都丟這。
-
----
-
-## 品質閘（過了才進 §12）
-
-- ✅ 每條開放問題有 owner + 需結論的時點
-- ✅ 與 §03 風險已分流（這裡只放「沒答案待查/待裁決」）
-- ✅ §06 跳過的需求已收編於此
+- **Hiding open questions**: pretending it's all figured out → blows up during implementation. Listing honestly is more professional.
+- **Questions with no owner/time**: become eternal to-dos. Assign a person + deadline each.
+- **Mixing with risks** (the AirPods pattern): anything you can state with probability/impact/mitigation moves to §03.
+- **Using open questions as procrastination**: investigate what's investigable now; don't dump everything here.
 
 ---
 
-## 格式片段
+## Quality gate (pass before §12)
+
+- ✅ Each open question has an owner + a time it needs a ruling
+- ✅ Separated from §03 risks (here only "no answer, to investigate/decide")
+- ✅ §06 skipped requirements are collected here
+
+---
+
+## Format snippet
 
 ```markdown
-## 11. 開放問題
+## 11. Open Questions
 
-| ID | 問題 | 影響 | Owner | 需結論時點 |
-|----|------|------|-------|-----------|
-| Q-1 | ... | ... | PM/風控 | 設計凍結前 |
+| ID | Question | Impact | Owner | Ruling by |
+|----|----------|--------|-------|-----------|
+| Q-1 | ... | ... | PM/risk | before design freeze |
 ```

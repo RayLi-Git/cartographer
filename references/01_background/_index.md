@@ -1,55 +1,55 @@
-# §01 背景與問題｜為什麼現在做這個
+# §01 Background & Problem | Why do this now
 
-> 對應 AirPods PRD 的 Introduction。一份 PRD 的第一段不是「我們要做什麼」，而是「**為什麼這個問題現在值得解**」。沒有問題陳述的功能清單，是無根的願望。
-
----
-
-## 引導問題
-
-1. 現在使用者/業務遇到的**具體痛點**是什麼？（一句話講不清，就還沒想清楚）
-2. **有什麼證據**？數據、客訴、訪談、觀察、競品動向——別只憑「我覺得」。
-3. **為什麼是現在**（why now）？技術成熟了？市場變了？法規要求？舊方案撐不住了？
-4. **現況/既有方案**是什麼？目前大家怎麼湊合著解這個問題？
-5. 如果**不做**會怎樣？（講不出代價，優先級就高不起來）
+> Maps to the AirPods PRD's Introduction. A PRD's first paragraph isn't "what we'll build" — it's "**why this problem is worth solving now**". A feature list with no problem statement is a rootless wish.
 
 ---
 
-## 「好」長什麼樣（正 vs 反）
+## Guiding questions
 
-✅ **好**：
-> 結帳流程目前棄單率 38%（過去 3 個月 GA 數據），客訴前三名有兩項是「付款失敗看不懂原因」與「填地址太繁瑣」。競品 X 已上線一鍵結帳，轉換率高我們 11%。現有結帳是 5 年前單體頁面，無法支援多金流，再不重構將擋住下季的訂閱制上線。
-
-❌ **壞**（AirPods 範本與常見毛病）：
-> 「使用者想要更好的結帳體驗。」——沒有數據、沒有 why now、沒有現況、沒有不做的代價。等同沒寫。
-
----
-
-## 常見陷阱
-
-- **把「解法」當「問題」寫**：「我們需要一個一鍵結帳功能」是解法；問題是「結帳步驟太多導致棄單」。先寫問題，解法留到 §06。
-- **證據是臆測**：「我相信加了 X 就會成長 15%」——這是**假設**不是事實，搬到 §03 假設區，這裡只放有憑據的現況。
-- **背景寫成公司簡介**：聚焦在「這個問題」，不是整個產品史。
+1. What **concrete pain** do users/the business hit now? (if you can't say it in one sentence, it isn't clear yet)
+2. What's the **evidence**? Data, complaints, interviews, observation, competitor moves — not just "I feel".
+3. **Why now**? Tech matured? Market shifted? Regulation? Old approach breaking down?
+4. What's the **current/existing solution**? How does everyone cope today?
+5. What happens **if we don't**? (can't name the cost → priority can't be high)
 
 ---
 
-## 品質閘（過了才進 §02）
+## What "good" looks like (good vs bad)
 
-- ✅ 問題用一句話講得清楚，且**不是解法**
-- ✅ 至少一條**可查證的證據**（數據/客訴/訪談/競品）；臆測已標 `⚠️推測` 並移往 §03
-- ✅ 答得出 why now 與「不做的代價」
+✅ **Good**:
+> Checkout abandonment is 38% (last 3 months of GA). Top complaints include two related to "payment failed with no reason" and "address form too long". Competitor X shipped one-tap checkout, converting 11% higher. The current checkout is a 5-year-old monolith page that can't support multiple payment providers; not rebuilding it will block next quarter's subscription launch.
+
+❌ **Bad** (the AirPods pattern and common faults):
+> "Users want a better checkout experience." — no data, no why-now, no current state, no cost of inaction. Equivalent to writing nothing.
 
 ---
 
-## 格式片段
+## Common traps
+
+- **Writing the "solution" as the "problem"**: "we need one-tap checkout" is a solution; the problem is "too many checkout steps cause abandonment". Write the problem; leave the solution to §06.
+- **Evidence that's speculation**: "I believe adding X will grow 15%" is a **hypothesis**, not a fact — move it to §03; keep only evidenced current state here.
+- **Background as company history**: focus on *this problem*, not the whole product story.
+
+---
+
+## Quality gate (pass before §02)
+
+- ✅ The problem is stated in one clear sentence, and **isn't a solution**
+- ✅ At least one **verifiable** piece of evidence (data/complaints/interviews/competitors); speculation is marked `⚠️assumption` and moved to §03
+- ✅ You can answer why-now and the cost of inaction
+
+---
+
+## Format snippet
 
 ```markdown
-## 1. 背景與問題
+## 1. Background & Problem
 
-**問題**：<一句話，描述痛點，不寫解法>
-**證據**：
-- <數據／來源>
-- <客訴／訪談摘要>
-**Why now**：<為什麼是現在這個時間點>
-**現況/既有方案**：<目前大家怎麼解、為什麼不夠>
-**不做的代價**：<維持現狀會損失什麼>
+**Problem**: <one sentence, the pain, not the solution>
+**Evidence**:
+- <data / source>
+- <complaint / interview summary>
+**Why now**: <why this point in time>
+**Current/existing solution**: <how it's solved today, why it's insufficient>
+**Cost of inaction**: <what the status quo loses>
 ```

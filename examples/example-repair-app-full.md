@@ -1,147 +1,147 @@
 <!--
-  Cartographer 互動示範產出 — 「社區住戶線上報修 App」（🔴 重級，走完整 14 節）
-  全為 🔴 測試假資料，僅示範逐節流程與 lint 驗證；可刪。
+  Cartographer interactive demo artifact — "Community Resident Maintenance-Request App" (🔴 heavy, all 14 sections walked through)
+  All 🔴 fictional test data, demonstrating the section-by-section flow and lint verification only; safe to delete.
 -->
 
-# 社區住戶線上報修 App PRD（示範）
+# Community Maintenance-Request App PRD (demo)
 
-| 欄位 | 內容 |
+| Field | Value |
 |---|---|
-| 作者/PM | 示範 |
-| 版本 | v0.2 |
-| 級別 | 🔴 重 ｜ 模式 | 起草 |
-| 敏感範疇 | ☑PII → §8 必走 |
+| Author / PM | Demo |
+| Version | v0.2 |
+| Tier | 🔴 heavy | Mode | draft |
+| Sensitive scope | [x]PII → §8 required |
 
-## 1. 背景與問題
-**問題**：住戶報修走 LINE 群＋電話，案件易漏接、無法追蹤進度。
-**證據**：🔴 上月 47 件報修有 9 件「已讀沒人處理」。
-**Why now**：新管委會要數位化。
-**不做的代價**：漏接→住戶不滿、管委會被檢討。
+## 1. Background & Problem
+**Problem**: Residents file maintenance requests over a group chat plus phone calls; tickets get dropped and progress can't be tracked.
+**Evidence**: 🔴 last month, 9 of 47 requests were "seen but unhandled".
+**Why now**: The new management committee wants to go digital.
+**Cost of inaction**: dropped tickets → resident dissatisfaction → the committee gets blamed.
 
-## 2. 目標與成功指標
-**North Star**：每月成功結案的報修數。
-| ID | 目標 | 現值→目標 | 期限 | 量測 |
-|----|------|----------|------|------|
-| O-1 | 漏接率 | 19%→5% | 2026 Q4 | read→assigned 比 |
-| O-2 | 平均結案時長 | 🔴未知→3天 | 2026 Q4 | closed_at−created_at |
-**護欄**：住戶端操作步數不增加。
+## 2. Objectives & Success Metrics
+**North Star**: maintenance requests successfully closed per month.
+| ID | Goal | Current → Target | Deadline | Measurement |
+|----|------|------------------|----------|-------------|
+| O-1 | Drop rate | 19% → 5% | 2026 Q4 | read → assigned ratio |
+| O-2 | Average time to close | 🔴 unknown → 3 days | 2026 Q4 | closed_at − created_at |
+**Guardrail**: resident-side step count must not increase.
 
-## 3. 假設、約束與風險
-**假設**：A-1 住戶有智慧手機且願用 App｜驗證: 上線採用率灰度｜owner: PM
-**約束**：C-1 跑管委會現有低成本主機；C-2 須符合個資法
-**風險**
-| ID | 風險 | 機率 | 衝擊 | 緩解 | Owner |
-|----|------|------|------|------|-------|
-| R-1 | 住戶仍走 LINE 不用 App | 高 | 中 | LINE 入口轉接 App | PM |
-| R-2 | 照片佔儲存爆量 | 中 | 中 | 壓縮 + 保存期限 | 工程 |
-| R-3 | PII 外洩 | 低 | 高 | 加密 + 最小授權 + 稽核 | 資安 |
+## 3. Assumptions, Constraints & Risks
+**Assumptions**: A-1 residents have a smartphone and are willing to use an app | validation: canary the adoption rate post-launch | owner: PM
+**Constraints**: C-1 runs on the committee's existing low-cost host; C-2 must comply with privacy law
+**Risks**
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | Residents keep using group chat instead of the app | High | Med | Group-chat entry point routes into the app | PM |
+| R-2 | Photos blow up storage | Med | Med | Compression + retention period | Eng |
+| R-3 | PII leak | Low | High | Encryption + least privilege + audit | Security |
 
-## 4. 利害關係人與 RACI
-| 角色 | 在乎 | 最怕 |
-|------|------|------|
-| 住戶 | 報修被處理、知進度 | 已讀不理 |
-| 管委會 | 不漏接、可追蹤 | 被住戶檢討 |
-| 維修人員 | 派工清楚 | 重複/漏派 |
-| 個資承辦 | 合規 | PII 外洩 |
+## 4. Stakeholders & RACI
+| Role | Cares about | Fears most |
+|------|-------------|------------|
+| Resident | Request gets handled, knows progress | Seen but ignored |
+| Committee | No dropped tickets, trackable | Getting blamed by residents |
+| Maintenance staff | Clear dispatch | Duplicate / missed dispatch |
+| Privacy officer | Compliance | PII leak |
 
-**RACI**（A 唯一）
-| 決策 | 管委會 | 工程 | 資安 |
-|------|--------|------|------|
-| 功能範圍 | A | C | C |
-| PII 處理 | C | R | A |
+**RACI** (single A)
+| Decision | Committee | Eng | Security |
+|----------|-----------|-----|----------|
+| Feature scope | A | C | C |
+| PII handling | C | R | A |
 
-## 5. 使用者故事與旅程
-**P1 住戶陳太太**：報修後不知進度。連回 O-2。
-**P2 管委會幹事**：要不漏接、能指派。連回 O-1。
-**反向 persona**：跨社區大型維修商（不服務）。
-**旅程**：拍照報修→指派→維修→結案；岔路 🚫上傳失敗 / ⏳超時未指派。
+## 5. User Stories & Journey
+**P1 resident Mrs. Carter**: doesn't know progress after filing a request. Links to O-2.
+**P2 committee clerk**: needs no dropped tickets and the ability to assign. Links to O-1.
+**Anti-persona**: large cross-community maintenance contractors (not served).
+**Journey**: photograph & file → assign → repair → close; branches 🚫 upload failed / ⏳ unassigned past timeout.
 
-## 6. 功能需求
-FR-RPT-01: 系統 shall 讓住戶建立含描述、照片、位置的報修案件。｜P0 ｜AC: 提交後回案件編號且狀態=new ｜來源: P1陳太太/O-1 ｜依賴: -
-FR-RPT-02: 系統 shall 讓管委會將案件指派給維修人員。｜P0 ｜AC: 指派後狀態=assigned且通知被指派者 ｜來源: P2幹事/O-1 ｜依賴: FR-RPT-01
-FR-RPT-03: 系統 shall 讓住戶查看案件即時狀態。｜P1 ｜AC: 狀態變更後住戶端60秒內更新 ｜來源: P1「不知修好沒」/O-2 ｜依賴: FR-RPT-01
-FR-RPT-04: 系統 shall 在照片上傳失敗時保留已填內容並可重試。｜P2 ｜AC: 上傳失敗顯示提示且草稿不遺失 ｜來源: 邊界/O-1 ｜依賴: FR-RPT-01
+## 6. Functional Requirements
+FR-RPT-01: The system shall let a resident create a maintenance request with description, photo, and location. | P0 | AC: after submit, returns a case id and status = new | Source: P1 Mrs. Carter / O-1 | Depends: -
+FR-RPT-02: The system shall let the committee assign a case to maintenance staff. | P0 | AC: after assignment, status = assigned and the assignee is notified | Source: P2 clerk / O-1 | Depends: FR-RPT-01
+FR-RPT-03: The system shall let a resident view the real-time status of their case. | P1 | AC: after a status change, the resident side updates within 60 seconds | Source: P1 "don't know if it's fixed" / O-2 | Depends: FR-RPT-01
+FR-RPT-04: The system shall preserve entered content and allow retry when a photo upload fails. | P2 | AC: on upload failure, show a hint and do not lose the draft | Source: edge / O-1 | Depends: FR-RPT-01
 
-## 7. 非功能需求
-NFR-PERF-01: 系統 shall 使案件列表在 200 筆下 p95 載入低於 2 秒。｜P1 ｜AC: 200案件下p95<2s ｜來源: O-2 ｜依賴: -
-NFR-OBS-01: 系統 shall 在案件逾 48 小時未指派時提醒管委會。｜P1 ｜AC: 48h未assigned發通知 ｜來源: O-1漏接 ｜依賴: FR-RPT-02
+## 7. Non-Functional Requirements
+NFR-PERF-01: The system shall keep the case-list load below p95 2 seconds at 200 cases. | P1 | AC: p95 < 2s at 200 cases | Source: O-2 | Depends: -
+NFR-OBS-01: The system shall remind the committee when a case is unassigned for over 48 hours. | P1 | AC: notification sent when unassigned for 48h | Source: O-1 drop | Depends: FR-RPT-02
 
-## 8. 資安、隱私與法遵
-### 8.1 資料分類
-| 資料 | 分類 | 存取控制 |
-|------|------|---------|
-| 姓名/門牌/電話 | PII | 角色授權+稽核 |
-| 報修照片 | 可能含個資 | 角色授權 |
+## 8. Security, Privacy & Compliance
+### 8.1 Data classification
+| Data | Class | Access control |
+|------|-------|----------------|
+| Name / unit number / phone | PII | Role-authorized + audited |
+| Maintenance photos | May contain PII | Role-authorized |
 
-NFR-PRIV-01: 系統 shall 僅允許案件關聯住戶與管委會讀取該案個資。｜P0 ｜AC: 非關聯帳號存取回403且寫稽核 ｜來源: 資安/PII ｜依賴: -
-NFR-SEC-01: 系統 shall 對所有 API 強制登入授權。｜P0 ｜AC: 未登入存取回401 ｜來源: 資安 ｜依賴: -
+NFR-PRIV-01: The system shall allow only the case's associated resident and the committee to read that case's PII. | P0 | AC: access from a non-associated account returns 403 and writes an audit log | Source: Security / PII | Depends: -
+NFR-SEC-01: The system shall require login authorization on all APIs. | P0 | AC: unauthenticated access returns 401 | Source: Security | Depends: -
 
-## 9. 資料與整合
-### 9.1 資料模型
+## 9. Data & Integration
+### 9.1 Data model
 ```
 Case { id, residentId, desc, photos[], location, status, assigneeId, createdAt, closedAt }
   status: new → assigned → in_progress → closed | reopened
 ```
-### 9.2 介面契約
+### 9.2 Interface contracts
 ```
 POST  /api/cases            → 201 {caseId, status} | 401
-PATCH /api/cases/{id}/assign → 200 | 403 非管委會 | 404
-GET   /api/cases/{id}        → 200 | 403 非關聯
+PATCH /api/cases/{id}/assign → 200 | 403 not committee | 404
+GET   /api/cases/{id}        → 200 | 403 not associated
 ```
-### 9.3 平台矩陣：住戶 iOS15+/Android 近2版；管委會 Web（Chrome/Edge 近2版）
-### 9.4 第三方：推播 FCM 失效→email；物件儲存（照片）失效→延後上傳
+### 9.3 Platform matrix: resident iOS15+ / Android last 2 versions; committee Web (Chrome/Edge last 2 versions)
+### 9.4 Third-party: push FCM fails → email; object storage (photos) fails → defer upload
 
-## 10. 範圍邊界
-**本期做**：報修建立/指派/狀態追蹤。
-**不做**：線上付費維修、設備保固、跨社區共用。
-**next（非承諾）**：住戶滿意度評分。
+## 10. Scope Boundary
+**In scope**: request creation / assignment / status tracking.
+**Out of scope**: paid online repairs, equipment warranty, cross-community sharing.
+**Next (not a promise)**: resident satisfaction rating.
 
-## 11. 開放問題
-| ID | 問題 | Owner | 需結論時點 |
-|----|------|-------|-----------|
-| Q-1 | 報修照片保存多久（隱私 vs 舉證） | PM+資安 | 設計凍結前 |
+## 11. Open Questions
+| ID | Question | Owner | Ruling by |
+|----|----------|-------|-----------|
+| Q-1 | How long to retain maintenance photos (privacy vs evidence)? | PM + Security | before design freeze |
 
-## 12. 里程碑與發布切片
-**依賴**：NFR-SEC-01 前置；FR-RPT-01 → FR-RPT-02 → FR-RPT-03
-| 里程碑 | 切片 | 含需求 | DoD | 硬時點 |
-|--------|------|--------|-----|--------|
-| M1 | 報修+指派+狀態 端到端 | FR-RPT-01,02,03; NFR-SEC-01, NFR-PRIV-01 | 真機跑通一件報修到結案 | — |
-| M2 | 通知+超時提醒+照片重試 | FR-RPT-04; NFR-OBS-01, NFR-PERF-01 | 48h提醒觸發、上傳失敗可續 | — |
+## 12. Milestones & Release Slices
+**Dependencies**: NFR-SEC-01 prerequisite; FR-RPT-01 → FR-RPT-02 → FR-RPT-03
+| Milestone | Slice | Requirements | DoD | Hard date |
+|-----------|-------|--------------|-----|-----------|
+| M1 | Request + assign + status end-to-end | FR-RPT-01,02,03; NFR-SEC-01, NFR-PRIV-01 | one request runs from filing to close on a real device | — |
+| M2 | Notify + timeout reminder + photo retry | FR-RPT-04; NFR-OBS-01, NFR-PERF-01 | 48h reminder fires, upload failure resumable | — |
 
-## 13. 名詞表與競品分析
-### 名詞表
-| 名詞 | 定義 |
-|------|------|
-| 漏接率 | 已讀但未指派的案件比率 |
-| 結案 | 案件 status=closed |
-### 競品/現況
-| 維度 | 我們 | LINE 群（現況） | 通用工單系統 |
-|------|------|----------------|--------------|
-| 案件狀態 | ✅ | ❌ | ✅ |
-| 社區情境 | ✅ | 部分 | ❌ |
-**差異化**：社區情境＋住戶零學習＋管委會指派看板（連回 O-1）。
+## 13. Glossary & Competitive Analysis
+### Glossary
+| Term | Definition |
+|------|------------|
+| Drop rate | ratio of cases seen but not assigned |
+| Close | case status = closed |
+### Competitive / current-state
+| Dimension | Us | Group chat (current) | Generic ticketing |
+|-----------|----|---------------------|-------------------|
+| Case status | ✅ | ❌ | ✅ |
+| Community context | ✅ | partial | ❌ |
+**Differentiation**: community context + zero learning curve for residents + an assignment board for the committee (maps to O-1).
 
-## 14. 交棒 compass
-### 可追溯矩陣
-| 需求 | 來源 | 目標 | AC摘要 | 優先級 | 里程碑 |
-|------|------|------|--------|--------|--------|
-| FR-RPT-01 | P1陳太太 | O-1 | 建案回編號狀態new | P0 | M1 |
-| FR-RPT-02 | P2幹事 | O-1 | 指派assigned+通知 | P0 | M1 |
-| FR-RPT-03 | P1 | O-2 | 狀態60s更新 | P1 | M1 |
-| FR-RPT-04 | 邊界 | O-1 | 上傳失敗保留草稿 | P2 | M2 |
-| NFR-PERF-01 | O-2 | O-2 | p95<2s | P1 | M2 |
-| NFR-OBS-01 | O-1漏接 | O-1 | 48h未指派提醒 | P1 | M2 |
-| NFR-PRIV-01 | 資安/PII | 護欄 | 非關聯403 | P0 | M1 |
-| NFR-SEC-01 | 資安 | 護欄 | 未登入401 | P0 | M1 |
+## 14. Handoff to Compass
+### Traceability matrix
+| Requirement | Source | Objective | AC summary | Priority | Milestone |
+|-------------|--------|-----------|------------|----------|-----------|
+| FR-RPT-01 | P1 Mrs. Carter | O-1 | create case → id, status new | P0 | M1 |
+| FR-RPT-02 | P2 clerk | O-1 | assign → assigned + notify | P0 | M1 |
+| FR-RPT-03 | P1 | O-2 | status updates in 60s | P1 | M1 |
+| FR-RPT-04 | edge | O-1 | upload failure keeps draft | P2 | M2 |
+| NFR-PERF-01 | O-2 | O-2 | p95 < 2s | P1 | M2 |
+| NFR-OBS-01 | O-1 drop | O-1 | 48h unassigned reminder | P1 | M2 |
+| NFR-PRIV-01 | Security / PII | Guardrail | non-associated 403 | P0 | M1 |
+| NFR-SEC-01 | Security | Guardrail | unauthenticated 401 | P0 | M1 |
 
-**孤兒檢查**：8 條需求皆有來源；O-1/O-2 皆有需求服務。✅ 無孤兒。
+**Orphan check**: all 8 requirements have a source; O-1/O-2 each have a serving requirement. ✅ No orphans.
 
 ### Compass Checklist
-- [ ] FR-RPT-01 建立報修 ｜P0｜AC: 回編號+狀態new｜verify: 整合測試
-- [ ] FR-RPT-02 指派案件 ｜P0｜AC: assigned+通知｜verify: 整合測試
-- [ ] FR-RPT-03 查看狀態 ｜P1｜AC: 60s內更新｜verify: 整合測試
-- [ ] FR-RPT-04 上傳重試 ｜P2｜AC: 失敗保留草稿｜verify: 整合測試
-- [ ] NFR-PERF-01 列表效能 ｜P1｜AC: p95<2s｜verify: 壓測
-- [ ] NFR-OBS-01 超時提醒 ｜P1｜AC: 48h未指派通知｜verify: 整合測試
-- [ ] NFR-PRIV-01 個資最小可讀 ｜P0｜AC: 非關聯403+稽核｜verify: 安全測試+掃描
-- [ ] NFR-SEC-01 API授權 ｜P0｜AC: 未登入401｜verify: 安全測試(test-first)
+- [ ] FR-RPT-01 create request | P0 | AC: returns id + status new | verify: integration test
+- [ ] FR-RPT-02 assign case | P0 | AC: assigned + notify | verify: integration test
+- [ ] FR-RPT-03 view status | P1 | AC: updates within 60s | verify: integration test
+- [ ] FR-RPT-04 upload retry | P2 | AC: failure keeps draft | verify: integration test
+- [ ] NFR-PERF-01 list performance | P1 | AC: p95 < 2s | verify: load test
+- [ ] NFR-OBS-01 timeout reminder | P1 | AC: 48h unassigned notify | verify: integration test
+- [ ] NFR-PRIV-01 least-privilege PII read | P0 | AC: non-associated 403 + audit | verify: security test + scan
+- [ ] NFR-SEC-01 API authz | P0 | AC: unauthenticated 401 | verify: security test (test-first)

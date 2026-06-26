@@ -1,156 +1,156 @@
 <!--
-  Cartographer 審查→重生成 示範 — 由爛 PRD「集點功能」重做成合格版。
-  全為 🔴 測試假資料；可刪。
+  Cartographer review → regenerate demo — the bad "Points feature" PRD reworked into a passing version.
+  All 🔴 fictional test data; safe to delete.
 -->
 
-# 會員集點與兌換 PRD（重生成版）
+# Membership Points & Redemption PRD (regenerated)
 
-| 欄位 | 內容 |
+| Field | Value |
 |---|---|
-| 作者/PM | 示範 |
-| 版本 | v1.0 |
-| 級別 | 🔴 重 ｜ 模式 | 起草（由審查重做） |
-| 敏感範疇 | ☑PII ☑價值(點數) ☑權限 → §8 必走 |
+| Author / PM | Demo |
+| Version | v1.0 |
+| Tier | 🔴 heavy | Mode | draft (reworked from a review) |
+| Sensitive scope | [x]PII [x]value(points) [x]permissions → §8 required |
 
-## 1. 背景與問題
-**問題**：會員缺乏回訪誘因，回購率偏低、消費後與品牌無黏著。
-**證據**：🔴 近 3 月回購率 21%、會員月活躍僅 12%；客訴問卷「沒有回購理由」居第二。
-**Why now**：競品已上線集點，會員流失加速。
-**現況**：消費後無任何積累機制。
-**不做的代價**：會員續流失、行銷成本墊高。
+## 1. Background & Problem
+**Problem**: Members have no incentive to return; repeat-purchase rate is low and there is no post-purchase attachment to the brand.
+**Evidence**: 🔴 repeat-purchase rate 21% over the last 3 months; monthly active members only 12%; "no reason to buy again" ranks second in the complaint survey.
+**Why now**: Competitors have shipped points programs; member churn is accelerating.
+**Current state**: No accumulation mechanism after purchase whatsoever.
+**Cost of inaction**: Continued member churn, rising marketing cost.
 
-## 2. 目標與成功指標
-**North Star**：月兌換成功會員數。
-| ID | 目標 | 現值→目標 | 期限 | 量測 |
-|----|------|----------|------|------|
-| O-1 | 會員月活躍率 | 12%→18% | 2026 Q4 | MAU/總會員 |
-| O-2 | 點數兌換轉換率 | 0%→8% | 2026 Q4 | redeem_succeeded/active_member |
-| O-3 | 回購率 | 21%→28% | 2027 Q1 | 90日內再購會員比 |
-**護欄**：點數相關詐騙/盜刷事件 = 0。
+## 2. Objectives & Success Metrics
+**North Star**: monthly members who redeem successfully.
+| ID | Goal | Current → Target | Deadline | Measurement |
+|----|------|------------------|----------|-------------|
+| O-1 | Monthly active member rate | 12% → 18% | 2026 Q4 | MAU / total members |
+| O-2 | Points redemption conversion | 0% → 8% | 2026 Q4 | redeem_succeeded / active_member |
+| O-3 | Repeat-purchase rate | 21% → 28% | 2027 Q1 | members re-purchasing within 90 days |
+**Guardrail**: points-related fraud/abuse incidents = 0.
 
-## 3. 假設、約束與風險
-**假設**：A-1 會員在意點數誘因｜驗證: 上線後兌換採用率灰度｜owner: PM
-**約束**：C-1 點數異動須可稽核（財務要求）；C-2 會員資料符合個資法
-**風險**
-| ID | 風險 | 機率 | 衝擊 | 緩解 | Owner |
-|----|------|------|------|------|-------|
-| R-1 | 重複兌換/併發扣點不一致 | 中 | 高 | 冪等鍵 + 交易鎖 | 後端 |
-| R-2 | 刷點數套利 | 中 | 高 | 累點頻率閾值 + 告警 + 人工覆核 | 風控 |
-| R-3 | PII 外洩 | 低 | 高 | 加密 + 最小授權 + 稽核 | 資安 |
+## 3. Assumptions, Constraints & Risks
+**Assumptions**: A-1 members care about a points incentive | validation: canary the redemption adoption rate post-launch | owner: PM
+**Constraints**: C-1 points changes must be auditable (finance requirement); C-2 member data must comply with privacy law
+**Risks**
+| ID | Risk | Prob | Impact | Mitigation | Owner |
+|----|------|------|--------|------------|-------|
+| R-1 | Duplicate redemption / inconsistent concurrent deductions | Med | High | Idempotency key + transaction lock | Backend |
+| R-2 | Points-farming arbitrage | Med | High | Earn-rate threshold + alert + manual review | Risk |
+| R-3 | PII leak | Low | High | Encryption + least privilege + audit | Security |
 
-## 4. 利害關係人與 RACI
-| 角色 | 在乎 | 最怕 |
-|------|------|------|
-| 會員 | 點數好懂、兌換順利 | 點數消失、兌換失敗 |
-| 行銷 | 拉動活躍/回購 | 規則複雜沒人用 |
-| 財務 | 點數=負債可對帳 | 對不上帳、被套利 |
-| 資安/個資 | 合規、防刷 | PII 外洩、盜刷 |
+## 4. Stakeholders & RACI
+| Role | Cares about | Fears most |
+|------|-------------|------------|
+| Member | Easy-to-understand points, smooth redemption | Points disappearing, redemption failing |
+| Marketing | Drives engagement/repeat purchase | Rules too complex, no adoption |
+| Finance | Points = liability, reconcilable | Books don't balance, gets arbitraged |
+| Security/privacy | Compliance, abuse prevention | PII leak, account fraud |
 
-**RACI**（A 唯一）
-| 決策 | 行銷 | 工程 | 財務 | 資安 |
-|------|------|------|------|------|
-| 點數規則 | A | C | C | I |
-| 點數異動稽核 | I | R | A | C |
-| PII / 防刷 | I | R | I | A |
+**RACI** (single A)
+| Decision | Marketing | Eng | Finance | Security |
+|----------|-----------|-----|---------|----------|
+| Points rules | A | C | C | I |
+| Points-change audit | I | R | A | C |
+| PII / abuse prevention | I | R | I | A |
 
-## 5. 使用者故事與旅程
-**P1 回購客－小美**：常消費、想用點數換好康。目標：清楚看到點數、順利兌換。連回 O-2。
-**P2 首購客**：剛加入，想知道怎麼累點。連回 O-1。
-**反向 persona**：純薅羊毛套利者（不服務，靠 §8 防刷阻擋）。
-**旅程**：消費累點→查點數→選禮品→兌換扣點→領取；岔路 🚫點數不足、⏳兌換逾時、🔁重複提交。
+## 5. User Stories & Journey
+**P1 repeat buyer — Mia**: spends often, wants to redeem points for perks. Goal: see points clearly, redeem smoothly. Links to O-2.
+**P2 first-time buyer**: just joined, wants to know how to earn points. Links to O-1.
+**Anti-persona**: pure points-farming arbitrageurs (not served, blocked by §8 abuse prevention).
+**Journey**: spend → earn points → check points → pick a gift → redeem & deduct → receive; branches 🚫 insufficient points, ⏳ redemption timeout, 🔁 duplicate submit.
 
-## 6. 功能需求
-FR-PTS-01: 系統 shall 在會員消費完成後依規則累積點數。｜P0 ｜AC: 消費成功後依比率累點且異動可查 ｜來源: P1小美/O-1 ｜依賴: -
-FR-PTS-02: 系統 shall 讓會員查詢點數異動明細。｜P1 ｜AC: 顯示近12個月異動含時間與事由 ｜來源: P1小美/O-1 ｜依賴: FR-PTS-01
-FR-PTS-03: 系統 shall 在消費後即時反映點數餘額。｜P1 ｜AC: 消費後點數餘額p95於1秒內更新 ｜來源: P1小美/O-1 ｜依賴: FR-PTS-01
-FR-PTS-04: 系統 shall 讓授權管理員調整會員點數並留稽核。｜P0 ｜AC: 每次調整寫who/when/before/after，非授權回403 ｜來源: 財務/護欄 ｜依賴: -
-FR-RDM-01: 系統 shall 讓會員以點數兌換禮品並扣除對應點數。｜P0 ｜AC: 兌換成功扣點並產生兌換紀錄，點數不足回422 ｜來源: P1小美/O-2 ｜依賴: FR-PTS-01
-FR-RDM-02: 系統 shall 對重複兌換請求以冪等方式處理，不重複扣點。｜P0 ｜AC: 相同冪等鍵兌換僅扣點一次 ｜來源: R-1/O-2 ｜依賴: FR-RDM-01
+## 6. Functional Requirements
+FR-PTS-01: The system shall accrue points by rule after a member completes a purchase. | P0 | AC: after a successful purchase, points accrue by ratio and the change is queryable | Source: P1 Mia / O-1 | Depends: -
+FR-PTS-02: The system shall let members look up their points-transaction history. | P1 | AC: shows the last 12 months of changes with time and reason | Source: P1 Mia / O-1 | Depends: FR-PTS-01
+FR-PTS-03: The system shall reflect the points balance in real time after a purchase. | P1 | AC: after a purchase, the points balance updates within p95 1 second | Source: P1 Mia / O-1 | Depends: FR-PTS-01
+FR-PTS-04: The system shall let an authorized admin adjust a member's points with an audit trail. | P0 | AC: every adjustment records who/when/before/after; unauthorized access returns 403 | Source: Finance / guardrail | Depends: -
+FR-RDM-01: The system shall let members redeem gifts with points and deduct the corresponding points. | P0 | AC: a successful redemption deducts points and creates a redemption record; insufficient points returns 422 | Source: P1 Mia / O-2 | Depends: FR-PTS-01
+FR-RDM-02: The system shall handle duplicate redemption requests idempotently, with no double deduction. | P0 | AC: the same idempotency key deducts points only once | Source: R-1 / O-2 | Depends: FR-RDM-01
 
-## 7. 非功能需求
-NFR-PERF-01: 系統 shall 使點數餘額更新 p95 低於 1 秒。｜P1 ｜AC: 尖峰下p95<1s ｜來源: O-1 ｜依賴: -
-NFR-OBS-01: 系統 shall 在兌換失敗率超標時告警。｜P1 ｜AC: 兌換失敗率>2%連續5分鐘觸發告警 ｜來源: O-2 ｜依賴: -
+## 7. Non-Functional Requirements
+NFR-PERF-01: The system shall keep the points-balance update below p95 1 second. | P1 | AC: p95 < 1s under peak | Source: O-1 | Depends: -
+NFR-OBS-01: The system shall alert when the redemption failure rate exceeds threshold. | P1 | AC: redemption failure rate > 2% for 5 consecutive minutes triggers an alert | Source: O-2 | Depends: -
 
-## 8. 資安、隱私與法遵
-### 8.1 資料分類
-| 資料 | 分類 | 存取控制 |
-|------|------|---------|
-| 會員姓名/手機 | PII | 角色授權+稽核 |
-| 點數餘額/異動 | 價值(等同負債) | 角色授權+稽核 |
+## 8. Security, Privacy & Compliance
+### 8.1 Data classification
+| Data | Class | Access control |
+|------|-------|----------------|
+| Member name / phone | PII | Role-authorized + audited |
+| Points balance / changes | Value (equiv. liability) | Role-authorized + audited |
 
-NFR-SEC-01: 系統 shall 對所有點數與兌換 API 強制登入授權。｜P0 ｜AC: 未登入存取回401 ｜來源: 資安 ｜依賴: -
-NFR-SEC-02: 系統 shall 在同帳號累點頻率超閾值時阻擋並告警以防套利。｜P0 ｜AC: 超閾值請求回429並記風控事件 ｜來源: R-2/護欄 ｜依賴: -
-NFR-PRIV-01: 系統 shall 僅允許會員本人與授權客服讀取其個資。｜P0 ｜AC: 越權存取回403且寫稽核 ｜來源: 資安/PII ｜依賴: -
+NFR-SEC-01: The system shall require login authorization on all points and redemption APIs. | P0 | AC: unauthenticated access returns 401 | Source: Security | Depends: -
+NFR-SEC-02: The system shall block and alert when a single account's earn frequency exceeds threshold, to prevent arbitrage. | P0 | AC: over-threshold requests return 429 and log a risk event | Source: R-2 / guardrail | Depends: -
+NFR-PRIV-01: The system shall allow only the member themselves and authorized support to read their PII. | P0 | AC: unauthorized access returns 403 and writes an audit log | Source: Security / PII | Depends: -
 
-## 9. 資料與整合
-### 9.1 資料模型
+## 9. Data & Integration
+### 9.1 Data model
 ```
 PointAccount { memberId, balance, updatedAt }
 PointTxn     { id, memberId, type(earn|redeem|adjust), amount, reason, operatorId, createdAt }
 Redemption   { id, memberId, rewardId, cost, status, idempotencyKey }
   status: created → confirmed → fulfilled | failed
 ```
-### 9.2 介面契約
+### 9.2 Interface contracts
 ```
-POST /api/redemptions → 201 {id,status} | 422 點數不足 | 409 重複 | 401
-GET  /api/points/{memberId} → 200 | 403 越權
+POST /api/redemptions → 201 {id,status} | 422 insufficient points | 409 duplicate | 401
+GET  /api/points/{memberId} → 200 | 403 unauthorized
 ```
-### 9.3 平台矩陣：會員 iOS15+/Android 近2版；後台 Web
-### 9.4 第三方：禮品庫存服務 失效→兌換暫停並提示稍後再試
+### 9.3 Platform matrix: member iOS15+ / Android last 2 versions; back office Web
+### 9.4 Third-party: gift-inventory service — on failure, pause redemption and prompt to try later
 
-## 10. 範圍邊界
-**本期做**：累點/查詢/兌換/管理員調整。
-**不做**：點數轉贈他人、跨品牌通用、點數購買。
-**next（非承諾）**：點數效期提醒、生日加倍。
+## 10. Scope Boundary
+**In scope**: earn / query / redeem / admin adjustment.
+**Out of scope**: gifting points to others, cross-brand universal points, buying points.
+**Next (not a promise)**: points-expiry reminders, birthday double points.
 
-## 11. 開放問題
-| ID | 問題 | Owner | 需結論時點 |
-|----|------|-------|-----------|
-| Q-1 | 點數是否設效期（財務負債 vs 體驗） | PM+財務 | 設計凍結前 |
-| Q-2 | 兌換取消後點數是否退回 | 後端 | M2 前 |
+## 11. Open Questions
+| ID | Question | Owner | Ruling by |
+|----|----------|-------|-----------|
+| Q-1 | Should points have an expiry (finance liability vs experience)? | PM + Finance | before design freeze |
+| Q-2 | Are points refunded after a redemption is cancelled? | Backend | before M2 |
 
-## 12. 里程碑與發布切片
-**依賴**：NFR-SEC-01 前置；FR-PTS-01 → FR-RDM-01 → FR-RDM-02
-| 里程碑 | 切片 | 含需求 | DoD | 硬時點 |
-|--------|------|--------|-----|--------|
-| M1 | 累點+查詢+即時餘額 | FR-PTS-01,02,03; NFR-SEC-01, NFR-PRIV-01 | 消費到累點到查詢端到端 | — |
-| M2 | 兌換+冪等+防刷+管理員 | FR-RDM-01,02; FR-PTS-04; NFR-SEC-02, NFR-OBS-01 | 兌換端到端+套利攔截驗證 | — |
+## 12. Milestones & Release Slices
+**Dependencies**: NFR-SEC-01 prerequisite; FR-PTS-01 → FR-RDM-01 → FR-RDM-02
+| Milestone | Slice | Requirements | DoD | Hard date |
+|-----------|-------|--------------|-----|-----------|
+| M1 | Earn + query + real-time balance | FR-PTS-01,02,03; NFR-SEC-01, NFR-PRIV-01 | spend → earn → query end-to-end | — |
+| M2 | Redeem + idempotency + abuse prevention + admin | FR-RDM-01,02; FR-PTS-04; NFR-SEC-02, NFR-OBS-01 | redemption end-to-end + arbitrage-block verified | — |
 
-## 13. 名詞表與競品分析
-### 名詞表
-| 名詞 | 定義 |
-|------|------|
-| 兌換轉換率 | 兌換成功會員 / 活躍會員 |
-| 冪等鍵 | 確保重複兌換請求只生效一次的識別碼 |
-### 競品/現況
-| 維度 | 我們 | 競品A | 現況 |
-|------|------|-------|------|
-| 集點 | ✅ | ✅ | ❌ |
-| 防刷 | ✅ | 部分 | — |
-**差異化**：清楚易懂的點數 + 嚴謹防刷（連回 O-2/護欄）。
+## 13. Glossary & Competitive Analysis
+### Glossary
+| Term | Definition |
+|------|------------|
+| Redemption conversion | members redeeming successfully / active members |
+| Idempotency key | an identifier ensuring a duplicate redemption request takes effect only once |
+### Competitive / current-state
+| Dimension | Us | Competitor A | Current |
+|-----------|----|--------------|---------|
+| Points program | ✅ | ✅ | ❌ |
+| Abuse prevention | ✅ | partial | — |
+**Differentiation**: clear, easy-to-understand points + rigorous abuse prevention (maps to O-2 / guardrail).
 
-## 14. 交棒 compass
-### 可追溯矩陣
-| 需求 | 來源 | 目標 | AC摘要 | 優先級 | 里程碑 |
-|------|------|------|--------|--------|--------|
-| FR-PTS-01 | P1小美 | O-1 | 消費後累點 | P0 | M1 |
-| FR-PTS-02 | P1小美 | O-1 | 查近12月明細 | P1 | M1 |
-| FR-PTS-03 | P1小美 | O-1 | 餘額1s更新 | P1 | M1 |
-| FR-PTS-04 | 財務 | 護欄 | 調整留稽核 | P0 | M2 |
-| FR-RDM-01 | P1小美 | O-2 | 兌換扣點 | P0 | M2 |
-| FR-RDM-02 | R-1 | O-2 | 冪等不重複扣 | P0 | M2 |
-| NFR-PERF-01 | O-1 | O-1 | p95<1s | P1 | M1 |
-| NFR-OBS-01 | O-2 | O-2 | 兌換失敗告警 | P1 | M2 |
-| NFR-SEC-01 | 資安 | 護欄 | 未登入401 | P0 | M1 |
-| NFR-SEC-02 | R-2 | 護欄 | 套利429 | P0 | M2 |
-| NFR-PRIV-01 | 資安/PII | 護欄 | 越權403 | P0 | M1 |
+## 14. Handoff to Compass
+### Traceability matrix
+| Requirement | Source | Objective | AC summary | Priority | Milestone |
+|-------------|--------|-----------|------------|----------|-----------|
+| FR-PTS-01 | P1 Mia | O-1 | accrue points after purchase | P0 | M1 |
+| FR-PTS-02 | P1 Mia | O-1 | query last 12 months | P1 | M1 |
+| FR-PTS-03 | P1 Mia | O-1 | balance updates in 1s | P1 | M1 |
+| FR-PTS-04 | Finance | Guardrail | adjustment leaves audit trail | P0 | M2 |
+| FR-RDM-01 | P1 Mia | O-2 | redeem & deduct | P0 | M2 |
+| FR-RDM-02 | R-1 | O-2 | idempotent, no double deduction | P0 | M2 |
+| NFR-PERF-01 | O-1 | O-1 | p95 < 1s | P1 | M1 |
+| NFR-OBS-01 | O-2 | O-2 | redemption-failure alert | P1 | M2 |
+| NFR-SEC-01 | Security | Guardrail | unauthenticated 401 | P0 | M1 |
+| NFR-SEC-02 | R-2 | Guardrail | arbitrage 429 | P0 | M2 |
+| NFR-PRIV-01 | Security / PII | Guardrail | unauthorized 403 | P0 | M1 |
 
-**孤兒檢查**：11 條皆有來源；O-1/O-2 皆有需求服務（O-3 由 O-1/O-2 達成驅動）。✅
+**Orphan check**: all 11 requirements have a source; O-1/O-2 each have a serving requirement (O-3 is driven by reaching O-1/O-2). ✅
 
 ### Compass Checklist
-- [ ] FR-PTS-01 累積點數 ｜P0｜AC: 消費後依規則累點｜verify: 整合測試
-- [ ] FR-RDM-01 兌換扣點 ｜P0｜AC: 扣點+紀錄,不足422｜verify: 整合測試
-- [ ] FR-RDM-02 兌換冪等 ｜P0｜AC: 相同鍵只扣一次｜verify: 整合測試
-- [ ] FR-PTS-04 管理員調整 ｜P0｜AC: 留稽核,非授權403｜verify: 安全測試
-- [ ] NFR-SEC-02 防刷 ｜P0｜AC: 超閾值429+風控事件｜verify: 安全測試
-- [ ] NFR-PRIV-01 個資最小可讀 ｜P0｜AC: 越權403+稽核｜verify: 安全測試+掃描
+- [ ] FR-PTS-01 accrue points | P0 | AC: accrue by rule after purchase | verify: integration test
+- [ ] FR-RDM-01 redeem & deduct | P0 | AC: deduct + record, insufficient 422 | verify: integration test
+- [ ] FR-RDM-02 idempotent redemption | P0 | AC: same key deducts once | verify: integration test
+- [ ] FR-PTS-04 admin adjustment | P0 | AC: audit trail, unauthorized 403 | verify: security test
+- [ ] NFR-SEC-02 abuse prevention | P0 | AC: over-threshold 429 + risk event | verify: security test
+- [ ] NFR-PRIV-01 least-privilege PII read | P0 | AC: unauthorized 403 + audit | verify: security test + scan

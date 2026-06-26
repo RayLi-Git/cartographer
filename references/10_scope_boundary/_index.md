@@ -1,59 +1,59 @@
-# §10 範圍邊界｜「不做的事」跟「要做的事」一樣重要
+# §10 Scope Boundary | "What we won't do" matters as much as "what we will"
 
-> AirPods 範本沒有明確的 out-of-scope 段落，這是常見缺口。**沒寫清楚不做什麼，範圍就會無限膨脹**。本節把 §05 的反向 persona、§02 沒對上目標的點子，正式收編成「本期不做」清單。
-
----
-
-## 引導問題
-
-1. 有哪些功能**這期明確不做**？為什麼（時間/優先級/不符目標）？
-2. 哪些是**之後可能做**（next）、哪些是**永遠不做**（won't）？
-3. §06 訪談中冒出但**沒對上任何 §02 目標**的點子，該砍還是進 next？
-4. 反向 persona（§05）的需求，導向哪裡？
-5. 邊界上**容易誤會「應該包含」**的東西，要不要明寫排除？
+> The AirPods template had no explicit out-of-scope section — a common gap. **Without writing down what's not done, scope grows forever.** This section formally folds the §05 anti-personas and the §02 ideas that matched no objective into a "not this cycle" list.
 
 ---
 
-## YAGNI 紀律（呼應 compass）
+## Guiding questions
 
-> PRD 沒寫的不寫；冒出來的點子若沒對上目標，預設進 **out of scope**，不擅自加。除非走「缺漏但實作更好」流程——保留 + 標註 + 等裁決（見 §11），不直接做、也不直接砍。
+1. Which features are **explicitly not done this cycle**? Why (time/priority/off-objective)?
+2. Which are **maybe later** (next) vs **never** (won't)?
+3. Ideas that surfaced in §06 but matched **no §02 objective** — cut, or move to next?
+4. Where do the anti-persona (§05) needs route?
+5. Things on the boundary that are **easily assumed "should be included"** — explicitly exclude?
 
 ---
 
-## 範圍三欄
+## YAGNI discipline (echoing Compass)
 
-| 本期做（in scope） | 本期不做（out of scope） | 之後可能（next） |
+> Don't write what the PRD doesn't call for; an idea that surfaces but maps to no objective defaults to **out of scope**, not added on a whim. Exception: the "missing but the implementation is better" path — keep + annotate + await ruling (see §11), don't silently do it or silently cut it.
+
+---
+
+## Three columns of scope
+
+| In scope (this cycle) | Out of scope (this cycle) | Next (maybe) |
 |---|---|---|
-| 訪客結帳、綁卡付款 | 批發報價單、月結 | 分期付款 |
-| 信用卡 + Apple/Google Pay | 加密貨幣付款 | 超商代碼 |
-| zh-TW / en | 其餘語系 | 日文 |
+| Guest checkout, saved-card pay | Wholesale quotes, net terms | Installments |
+| Credit card + Apple/Google Pay | Crypto payment | Convenience-store codes |
+| zh-TW / en | Other locales | Japanese |
 
 ---
 
-## 常見陷阱
+## Common traps
 
-- **只列要做、不列不做**：邊界模糊 → 工程與 PM 各自想像 → 範圍蔓延。
-- **把「不做」當「失敗」**：明確不做是聚焦，不是缺陷。
-- **next 變成承諾**：next 是「可能」，別寫成保證，否則變隱性合約。
-- **邊界沒對齊目標**：判斷 in/out 的標準是 §02 目標，不是「順手」。
-
----
-
-## 品質閘（過了才進 §11）
-
-- ✅ 有明確的 out-of-scope 清單
-- ✅ 反向 persona（§05）與沒對上目標的點子都已歸位
-- ✅ in/out 的判準對齊 §02 目標
-- ✅ next ≠ 承諾，措辭保留
+- **Listing only "will", not "won't"**: blurry boundary → eng and PM each imagine their own → scope creep.
+- **Treating "won't" as failure**: an explicit "won't" is focus, not a defect.
+- **"Next" becomes a promise**: next means "maybe", don't write it as a guarantee or it becomes an implicit contract.
+- **Boundary off-objective**: the in/out criterion is §02 objectives, not "convenience".
 
 ---
 
-## 格式片段
+## Quality gate (pass before §11)
+
+- ✅ There's an explicit out-of-scope list
+- ✅ Anti-personas (§05) and off-objective ideas are placed
+- ✅ The in/out criterion aligns with §02 objectives
+- ✅ Next ≠ promise; wording stays tentative
+
+---
+
+## Format snippet
 
 ```markdown
-## 10. 範圍邊界
+## 10. Scope Boundary
 
-**本期做**：...
-**本期不做（out of scope）**：... ｜原因：...
-**之後可能（next，非承諾）**：...
+**In scope**: ...
+**Out of scope (this cycle)**: ... | reason: ...
+**Next (maybe, not a promise)**: ...
 ```
